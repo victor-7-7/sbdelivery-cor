@@ -1,0 +1,101 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-kapt'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "ru.skillbranch.sbdelivery"
+        minSdkVersion 25
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.0.0-beta01"
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "androidx.core:core-ktx:$core_ktx_version"
+
+    // Jetpack
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.activity:activity-ktx:$activity_ktx_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$vm_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$vm_version"
+    implementation "com.google.android.material:material:$material_version"
+
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines_version}"
+
+    //Room
+    implementation "androidx.room:room-runtime:${room_version}"
+    implementation "androidx.room:room-ktx:${room_version}"
+    kapt "androidx.room:room-compiler:${room_version}"
+
+    //Networking
+    implementation "com.squareup.retrofit2:retrofit:$retofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retofit_version"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+
+    // image loader
+    implementation "dev.chrisbanes.accompanist:accompanist-coil:$coil_compose_version"
+
+    //di
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_vm_version"
+    kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
+
+    //compose
+    implementation "androidx.compose.compiler:compiler:$compose_version"
+    implementation "androidx.compose.ui:ui:$compose_version"
+    // Tooling support (Previews, etc.)
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+    implementation "androidx.compose.foundation:foundation:$compose_version"
+    // Material Design
+    implementation "androidx.compose.material:material:$compose_version"
+    // Material design icons
+    implementation "androidx.compose.material:material-icons-core:$compose_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    // Integration with activities
+    implementation "androidx.activity:activity-compose:$compose_activity_version"
+    implementation "androidx.constraintlayout:constraintlayout-compose:$compose_constarint_version"
+
+    testImplementation 'junit:junit:4.+'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
+    testImplementation "io.mockk:mockk:1.11.0"
+}

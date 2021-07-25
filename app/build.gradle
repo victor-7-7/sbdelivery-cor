@@ -1,16 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-kapt'
-
-//plugins {
-//    id 'com.android.application'
-//    id 'kotlin-android'
-//    id 'dagger.hilt.android.plugin'
-//    id 'kotlin-kapt'
-//}
-
-
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion 30
@@ -43,7 +34,8 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "1.0.0-beta01"
+        kotlinCompilerVersion = "1.5.10"
+        kotlinCompilerExtensionVersion "1.0.0-rc02"
     }
     testOptions {
         unitTests.returnDefaultValues = true
@@ -108,6 +100,15 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:$compose_constarint_version"
 
     testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1'
     testImplementation "io.mockk:mockk:1.11.0"
+
+    testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptTest "com.google.dagger:hilt-compiler:$hilt_version"
+}
+
+// https://dagger.dev/hilt/gradle-setup.html
+kapt {
+    correctErrorTypes true
 }

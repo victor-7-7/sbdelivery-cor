@@ -1,9 +1,16 @@
-plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'dagger.hilt.android.plugin'
-    id 'kotlin-kapt'
-}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'kotlin-kapt'
+
+//plugins {
+//    id 'com.android.application'
+//    id 'kotlin-android'
+//    id 'dagger.hilt.android.plugin'
+//    id 'kotlin-kapt'
+//}
+
+
 
 android {
     compileSdkVersion 30
@@ -44,7 +51,12 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+// https://kotlinlang.org/docs/whatsnew14.html#dependency-on-the-standard-library-added-by-default
+    // You no longer need to declare a dependency on the stdlib library in
+    // any Kotlin Gradle project, including a multiplatform one.
+    // The dependency is added by default
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.core:core-ktx:$core_ktx_version"
 
     // Jetpack
@@ -95,7 +107,7 @@ dependencies {
     implementation "androidx.activity:activity-compose:$compose_activity_version"
     implementation "androidx.constraintlayout:constraintlayout-compose:$compose_constarint_version"
 
-    testImplementation 'junit:junit:4.+'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1'
     testImplementation "io.mockk:mockk:1.11.0"
 }

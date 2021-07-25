@@ -6,7 +6,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0-alpha11'
+        // https://stackoverflow.com/questions/67890567/unable-to-find-method-void-com-android-build-api-extension-androidcomponentsex
+        // https://stackoverflow.com/questions/68152879/unrecognized-android-studio-or-android-support-plugin-for-intellij-idea-error
+        // Надо работать в Android Studio из канала Canary
+        classpath 'com.android.tools.build:gradle:7.0.0-rc01'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
 

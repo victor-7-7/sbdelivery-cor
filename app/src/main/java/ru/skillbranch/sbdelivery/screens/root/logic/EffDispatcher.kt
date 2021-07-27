@@ -1,7 +1,6 @@
 package ru.skillbranch.sbdelivery.screens.root.logic
 
 import android.util.Log
-import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.skillbranch.sbdelivery.repository.RootRepository
@@ -9,8 +8,6 @@ import ru.skillbranch.sbdelivery.screens.cart.logic.CartEffHandler
 import ru.skillbranch.sbdelivery.screens.dish.logic.DishEffHandler
 import ru.skillbranch.sbdelivery.screens.dishes.logic.DishesEffHandler
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.coroutines.coroutineContext
 
 class EffDispatcher @Inject constructor(
     private val dishesHandler: DishesEffHandler,
@@ -30,7 +27,6 @@ class EffDispatcher @Inject constructor(
 
     override suspend fun handle(effect: Eff, commit: (Msg) -> Unit) {
         Log.e("EffDispatcher", "EFF $effect")
-
 
         when (effect) {
             is Eff.Dishes -> dishesHandler.handle(effect.eff, commit)

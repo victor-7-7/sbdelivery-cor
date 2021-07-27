@@ -21,7 +21,7 @@ object RootFeature {
         ),
         currentRoute = DishesFeature.route
     )
-
+    // 35:07
     private fun initialEffects(): Set<Eff> =
         DishesFeature.initialEffects().mapTo(HashSet(), Eff::Dishes) + Eff.SyncCounter
 

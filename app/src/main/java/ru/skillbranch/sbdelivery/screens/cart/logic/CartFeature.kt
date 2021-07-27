@@ -7,7 +7,7 @@ import java.io.Serializable
 
 object CartFeature {
 
-    val route = "cart"
+    const val route = "cart"
 
     fun initialState() : State = State()
     fun initialEffects() : Set<Eff> = setOf(Eff.LoadCart)

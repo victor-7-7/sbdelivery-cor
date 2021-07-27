@@ -27,6 +27,7 @@ class DishesRepository @Inject constructor(
     private val dishesDao: DishesDao,
     private val cartDao: CartDao
 ) : IDishesRepository {
+
     override suspend fun searchDishes(query: String): List<DishItem> {
         return if (query.isEmpty()) findDishes()
         else dishesDao.findDishesFrom(query)

@@ -35,7 +35,6 @@ fun DishesScreen(state: DishesFeature.State, accept: (DishesFeature.Msg) -> Unit
             }
         }
 
-
         is DishesUiState.Loading -> Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()

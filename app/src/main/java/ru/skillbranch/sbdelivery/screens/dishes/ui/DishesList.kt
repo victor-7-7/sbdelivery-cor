@@ -1,5 +1,6 @@
 package ru.skillbranch.sbdelivery.screens.dishes.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -15,12 +16,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import dev.chrisbanes.accompanist.coil.CoilImage
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import ru.skillbranch.sbdelivery.R
 import ru.skillbranch.sbdelivery.screens.dishes.data.DishItem
 import ru.skillbranch.sbdelivery.screens.root.ui.AppTheme
 
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun DishItem(
     dish: DishItem,
@@ -36,30 +39,18 @@ fun DishItem(
 
             val (fab, title, poster, price) = createRefs()
 
-            CoilImage(
-                data = dish.image,
+            // https://google.github.io/accompanist/coil/
+            val painter = rememberImagePainter(
+                    data = dish.image,
+                    builder = {
+                        crossfade(true)
+                        placeholder(R.drawable.img_empty_place_holder)
+                })
+
+            Image(
+                painter = painter,
                 contentDescription = "My content description",
                 contentScale = ContentScale.Crop,
-                error = {
-                    Icon(
-                        painter = painterResource(R.drawable.img_empty_place_holder),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.secondary,
-                        modifier = Modifier
-                            .padding(48.dp)
-                            .fillMaxSize()
-                    )
-                },
-                loading = {
-                    Icon(
-                        painter = painterResource(R.drawable.img_empty_place_holder),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.secondary,
-                        modifier = Modifier
-                            .padding(48.dp)
-                            .fillMaxSize()
-                    )
-                },
                 modifier = Modifier
                     .height(160.dp)
                     .fillMaxSize()
@@ -69,6 +60,7 @@ fun DishItem(
                         end.linkTo(parent.end)
                     }
             )
+
             Text(
                 fontSize = 16.sp,
                 color = MaterialTheme.colors.secondary,

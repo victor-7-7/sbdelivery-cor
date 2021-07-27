@@ -15,6 +15,7 @@ class DishesEffHandler @Inject constructor(
     private val notifyChannel: Channel<Eff.Notification>,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : IEffHandler<DishesFeature.Eff, Msg> {
+
     override suspend fun handle(effect: DishesFeature.Eff, commit: (Msg) -> Unit) {
         when (effect) {
             is DishesFeature.Eff.AddToCart -> {

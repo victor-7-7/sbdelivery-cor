@@ -34,7 +34,9 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerVersion = "1.5.10"
+        // https://developer.android.com/codelabs/jetpack-compose-basics#1
+        // Also, make sure that kotlinCompilerVersion is not present in the composeOptions block
+//        kotlinCompilerVersion = "1.5.10"
         kotlinCompilerExtensionVersion "1.0.0-rc02"
     }
     testOptions {
@@ -74,14 +76,17 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
 
-    // image loader
-    implementation "dev.chrisbanes.accompanist:accompanist-coil:$coil_compose_version"
-
     //di
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_vm_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
+
+    // image loader
+    // https://github.com/google/accompanist/releases
+    // Accompanist Coil is deprecated
+//    implementation "dev.chrisbanes.accompanist:accompanist-coil:$coil_accompanist_compose_version"
+    implementation "io.coil-kt:coil-compose:$coil_compose_version"
 
     //compose
     implementation "androidx.compose.compiler:compiler:$compose_version"

@@ -32,14 +32,14 @@ fun RootScreen(vm: RootViewModel) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
-    scope.launch {
+    LaunchedEffect(scope) {
         vm.dispatcher.notifications
             .collect { notification -> renderNotification(notification, scaffoldState, vm::accept) }
     }
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar={ AppbarHost(vm) },
+        topBar= { AppbarHost(vm) },
         content = { ContentHost(vm) }
     )
 }

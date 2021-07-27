@@ -7,7 +7,7 @@ import ru.skillbranch.sbdelivery.screens.dish.data.ReviewUiState
 import java.io.Serializable
 
 object DishFeature {
-    val route = "dish"
+    const val route = "dish"
 
     fun initialState() : State = State("", "")
     fun initialEffects(id:String) : Set<Eff> =  setOf(Eff.LoadDish(id), Eff.LoadReviews(id))

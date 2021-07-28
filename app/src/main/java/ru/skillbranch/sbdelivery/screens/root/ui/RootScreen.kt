@@ -32,6 +32,8 @@ fun RootScreen(vm: RootViewModel) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
+    // t.c. 01:28:21 так как нет изменяемых аргументов, то можно использовать
+    // scope.launch { ...
     LaunchedEffect(scope) {
         vm.dispatcher.notifications
             .collect { notification -> renderNotification(notification, scaffoldState, vm::accept) }
@@ -44,7 +46,6 @@ fun RootScreen(vm: RootViewModel) {
     )
 }
 
-
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
 @Composable
@@ -54,9 +55,9 @@ fun ContentHost(vm: RootViewModel) {
 
     Navigation(currentScreen = screen, modifier = Modifier.fillMaxSize()) { currentScreen ->
         when (currentScreen) {
-            is ScreenState.Dishes -> DishesScreen(currentScreen.state, { vm.accept(Msg.Dishes(it)) })
-            is ScreenState.Dish -> DishScreen(currentScreen.state, { vm.accept(Msg.Dish(it)) })
-            is ScreenState.Cart -> CartScreen(currentScreen.state, { vm.accept(Msg.Cart(it)) })
+            is ScreenState.Dishes -> DishesScreen(currentScreen.state) { vm.accept(Msg.Dishes(it)) }
+            is ScreenState.Dish -> DishScreen(currentScreen.state) { vm.accept(Msg.Dish(it)) }
+            is ScreenState.Cart -> CartScreen(currentScreen.state) { vm.accept(Msg.Cart(it)) }
         }
     }
 
@@ -99,6 +100,9 @@ private suspend fun renderNotification(
     scaffoldState: ScaffoldState,
     accept: (Msg) -> Unit
 ) {
+    // В компоузе метод showSnackbar показывает бар и затем возвращает результат
+    // SnackbarResult.Dismissed (если истек таймаут или юзер смахнул снэкбар)
+    // или SnackbarResult.ActionPerformed (если юзер тапнул кнопку экшн)
     val result = when(notification){
         is Eff.Notification.Text -> scaffoldState.snackbarHostState.showSnackbar(notification.message)
         is Eff.Notification.Action -> {

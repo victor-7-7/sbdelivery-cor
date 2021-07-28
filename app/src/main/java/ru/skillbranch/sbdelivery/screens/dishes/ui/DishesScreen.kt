@@ -43,9 +43,11 @@ fun DishesScreen(state: DishesFeature.State, accept: (DishesFeature.Msg) -> Unit
         }
 
         is DishesUiState.Value -> LazyGrid(items = state.list.dishes) {
-            DishItem(dish = it,
+            DishItem(
+                dish = it,
                 onClick = { dish -> accept(DishesFeature.Msg.ClickDish(dish.id, dish.title)) },
-                addToCart = { dish -> accept(DishesFeature.Msg.AddToCart(dish.id, dish.title)) })
+                addToCart = { dish -> accept(DishesFeature.Msg.AddToCart(dish.id, dish.title)) }
+            )
         }
     }
 }

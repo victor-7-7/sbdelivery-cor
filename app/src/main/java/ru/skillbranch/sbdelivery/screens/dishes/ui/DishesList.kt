@@ -31,11 +31,7 @@ fun DishItem(
     addToCart: (dishId: DishItem) -> Unit
 ) {
     Card(Modifier.requiredHeight(250.dp)) {
-        ConstraintLayout(
-            Modifier
-                .clickable {
-                    onClick(dish)
-                }) {
+        ConstraintLayout(Modifier.clickable { onClick(dish) }) {
 
             val (fab, title, poster, price) = createRefs()
 
@@ -75,6 +71,7 @@ fun DishItem(
                     .fillMaxWidth()
 
             )
+
             Text(
                 fontSize = 14.sp,
                 color = MaterialTheme.colors.onSurface,
@@ -90,6 +87,7 @@ fun DishItem(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
+
             FloatingActionButton(
                 modifier = Modifier
                     .width(40.dp)

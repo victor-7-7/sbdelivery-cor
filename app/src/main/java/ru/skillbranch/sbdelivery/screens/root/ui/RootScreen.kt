@@ -52,7 +52,10 @@ fun RootScreen(vm: RootViewModel) {
 fun ContentHost(vm: RootViewModel) {
     val state: RootState by vm.feature.state.collectAsState()
     val screen: ScreenState = state.current
-
+    // t.c. 02:16:00 при возврате на предыдущий скрин, если его стейт не изменился,
+    // то фреймворк подставит уже построенный ранее Composable. А если изменилось
+    // свойство Х стейта, то фреймворк перерисует только тот компонент лейаута в
+    // Composable, на который свойство Х влияет
     Navigation(currentScreen = screen, modifier = Modifier.fillMaxSize()) { currentScreen ->
         when (currentScreen) {
             is ScreenState.Dishes -> DishesScreen(currentScreen.state) { vm.accept(Msg.Dishes(it)) }
@@ -70,14 +73,23 @@ fun Navigation(
     modifier: Modifier = Modifier,
     content: @Composable (ScreenState) -> Unit
 ){
+    // t.c. 02:17:00 как бы "локальная" переменная функции. На самом деле
+    // ее значение будет восстановлено при вызове функции в то значение,
+    // которое она имела при предыдущем вызове функции
     val restorableStateHolder = rememberSaveableStateHolder()
-
+    // t.c. 02:15:00 пояснения про отличие Composable от Widgets
     Box(modifier){
+        // SaveableStateProvider ->
+        // Put your content associated with a key inside the content.
+        // This will automatically save all the states defined with
+        // rememberSaveable before disposing the content and will restore
+        // the states when you compose with this key again
         restorableStateHolder.SaveableStateProvider(key = currentScreen.route + currentScreen.title) {
+            // Построенное в лямбде content представление Composable, будет
+            // закешировано в restorableStateHolder с ключом key при уходе с экрана
             content(currentScreen)
         }
     }
-
 }
 
 @ExperimentalComposeUiApi

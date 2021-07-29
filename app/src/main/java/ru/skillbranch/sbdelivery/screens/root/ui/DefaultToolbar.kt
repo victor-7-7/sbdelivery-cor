@@ -19,6 +19,7 @@ import ru.skillbranch.sbdelivery.screens.root.logic.NavigateCommand
 
 @Composable
 fun DefaultToolbar(title: String, cartCount: Int, navigate: (NavigateCommand) -> Unit) {
+
     TopAppBar(
         title = {
             Text(
@@ -75,6 +76,6 @@ fun CartButton(cartCount: Int, onCartClick: () -> Unit) {
 @Composable
 fun DefaultToolbarPreview(){
     AppTheme {
-        DefaultToolbar(title = "test", 10, {})
+        DefaultToolbar(title = "test", 10) {}
     }
 }

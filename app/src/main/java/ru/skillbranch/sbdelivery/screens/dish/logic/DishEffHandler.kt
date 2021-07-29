@@ -23,6 +23,7 @@ class DishEffHandler @Inject constructor(
     override suspend fun handle(effect: DishFeature.Eff, commit: (Msg) -> Unit) {
 
         if (localJob == null) localJob = Job()
+
         withContext(localJob!! + dispatcher) {
             when (effect) {
                 is DishFeature.Eff.AddToCart -> TODO()
@@ -41,6 +42,9 @@ class DishEffHandler @Inject constructor(
                 is DishFeature.Eff.SendReview -> TODO()
                 is DishFeature.Eff.Terminate -> {
                     localJob?.cancel("Terminate coroutine scope")
+                    // t.c. 01:59:40 если джоб отменен, то к нему уже
+                    // нельзя присоединять новые джобы, нельзя запустить
+                    // внутри него новые корутины
                     localJob = null
                 }
             }
@@ -49,7 +53,6 @@ class DishEffHandler @Inject constructor(
     }
 
     private fun DishFeature.Msg.toMsg(): Msg = Msg.Dish(this)
-
 }
 
 

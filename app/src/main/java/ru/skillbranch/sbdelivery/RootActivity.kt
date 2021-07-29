@@ -41,6 +41,7 @@ class RootActivity : AppCompatActivity() {
 
     private fun handleCommands(cmd: Command){
         when(cmd){
+            // Если поступила команда закрыть активити
             Command.Finish -> finish()
         }
     }

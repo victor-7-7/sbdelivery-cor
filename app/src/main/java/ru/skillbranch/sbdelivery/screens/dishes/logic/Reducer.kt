@@ -37,9 +37,8 @@ fun DishesFeature.State.selfReduce(msg: DishesFeature.Msg): Pair<DishesFeature.S
         ).toEffs()
 
         is DishesFeature.Msg.SearchToggle -> when {
-            input.isNotEmpty() && isSearch -> copy(input = "", suggestions = emptyMap()) to setOf(
-                DishesFeature.Eff.FindAllDishes
-            ).toEffs()
+            input.isNotEmpty() && isSearch -> copy(input = "", suggestions = emptyMap()) to
+                    setOf(DishesFeature.Eff.FindAllDishes).toEffs()
             input.isEmpty() && !isSearch -> copy(isSearch = true) to emptySet()
             else -> copy(isSearch = false, suggestions = emptyMap()) to emptySet()
         }
@@ -54,10 +53,12 @@ fun DishesFeature.State.selfReduce(msg: DishesFeature.Msg): Pair<DishesFeature.S
         is DishesFeature.Msg.ShowSuggestions -> copy(suggestions = msg.suggestions) to emptySet()
 
         is DishesFeature.Msg.SuggestionSelect -> {
-            copy(suggestions = emptyMap(), input = msg.suggestion) to setOf(DishesFeature.Eff.SearchDishes(msg.suggestion)).toEffs()
+            copy(suggestions = emptyMap(), input = msg.suggestion) to
+                    setOf(DishesFeature.Eff.SearchDishes(msg.suggestion)).toEffs()
         }
 
-        is DishesFeature.Msg.UpdateSuggestionResult -> this to setOf(DishesFeature.Eff.FindSuggestions(msg.query)).toEffs()
+        is DishesFeature.Msg.UpdateSuggestionResult -> this to
+                setOf(DishesFeature.Eff.FindSuggestions(msg.query)).toEffs()
     }
 
 

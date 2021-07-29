@@ -136,7 +136,10 @@ fun RatingBar(value: Int = 0, maxValue: Int = 5, onChoose: (Int) -> Unit, modifi
             IconButton(onClick = { onChoose(item.inc()) }) {
                 Icon(
                     tint = MaterialTheme.colors.secondary,
-                    painter = painterResource(if (item.inc() <= value) R.drawable.ic_baseline_star_24 else R.drawable.ic_baseline_star_border_24),
+                    painter = painterResource(
+                        if (item.inc() <= value) R.drawable.ic_baseline_star_24
+                        else R.drawable.ic_baseline_star_border_24
+                    ),
                     contentDescription = null
                 )
             }

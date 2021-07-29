@@ -2,6 +2,7 @@ package ru.skillbranch.sbdelivery.screens.root.logic
 
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.skillbranch.sbdelivery.screens.cart.logic.CartFeature
@@ -13,6 +14,7 @@ import ru.skillbranch.sbdelivery.screens.dishes.logic.reduce
 import java.io.Serializable
 
 object RootFeature {
+
     private fun initialState(): RootState = RootState(
         screens = mapOf(
             DishesFeature.route to ScreenState.Dishes(DishesFeature.initialState()),
@@ -21,15 +23,30 @@ object RootFeature {
         ),
         currentRoute = DishesFeature.route
     )
+
     // 35:07
     private fun initialEffects(): Set<Eff> =
         DishesFeature.initialEffects().mapTo(HashSet(), Eff::Dishes) + Eff.SyncCounter
 
+    // StateFlow is a SharedFlow that represents a read-only state with a single
+    // updatable data value that emits updates to the value to its collectors.
+    // A state flow is a hot flow because its active instance exists independently
+    // of the presence of collectors. Its current value can be retrieved via
+    // the value property
+    /** Горячий разделяемый поток стейтов RootState */
     private val _state: MutableStateFlow<RootState> = MutableStateFlow(initialState())
+    // Свойство, доступное снаружи, должно быть read-only
     val state
         get() = _state.asStateFlow()
+
     private lateinit var _scope: CoroutineScope
 
+    // SharedFlow is a hot Flow that shares emitted values among all its collectors
+    // in a broadcast fashion, so that all collectors get all emitted values.
+    // A shared flow is called hot because its active instance exists
+    // independently of the presence of collectors. This is opposed to a
+    // regular Flow which is cold and is started separately for each collector
+    /** Горячий разделяемый поток сообщений Msg */
     private val mutations: MutableSharedFlow<Msg> = MutableSharedFlow()
 
     fun mutate(mutation: Msg) {
@@ -38,13 +55,15 @@ object RootFeature {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun listen(scope: CoroutineScope, effDispatcher: IEffHandler<Eff, Msg>, initState: RootState?) {
         Log.e("RootFeature", "Start listen init state: $initState")
         _scope = scope
         _scope.launch {
-            mutations
-                .onEach { Log.e("DemoEffHandler", "MUTATION $it") }
-                .scan((initState ?: initialState()) to initialEffects()) { (s, _), m -> reduceDispatcher(s, m) }
+            mutations.onEach { Log.e("DemoEffHandler", "MUTATION $it") }
+                .scan((initState ?: initialState()) to initialEffects()) { (s, _), m ->
+                    reduceDispatcher(s, m)
+                }
                 .collect { (s, eff) ->
                     _state.emit(s)
                     eff.forEach {
@@ -58,20 +77,15 @@ object RootFeature {
 
     private fun reduceDispatcher(root: RootState, msg: Msg): Pair<RootState, Set<Eff>> =
         when {
-            msg is Msg.Dishes && root.current is ScreenState.Dishes -> root.current.state.reduce(
-                root,
-                msg.msg
-            )
+            // t.c. 01:53:30 поясняется зачем нужно проверять два условия
+            msg is Msg.Dishes && root.current is ScreenState.Dishes ->
+                root.current.state.reduce(root, msg.msg)
 
-            msg is Msg.Dish && root.current is ScreenState.Dish -> root.current.state.reduce(
-                root,
-                msg.msg
-            )
+            msg is Msg.Dish && root.current is ScreenState.Dish ->
+                root.current.state.reduce(root, msg.msg)
 
-            msg is Msg.Cart && root.current is ScreenState.Cart -> root.current.state.reduce(
-                root,
-                msg.msg
-            )
+            msg is Msg.Cart && root.current is ScreenState.Cart ->
+                root.current.state.reduce(root, msg.msg)
 
             //root mutations
             msg is Msg.UpdateCartCount -> root.copy(cartCount = msg.count) to emptySet()
@@ -159,7 +173,7 @@ sealed class NavigateCommand {
 
 sealed class Command {
     object Finish : Command()
-    //Android specific commands finish() startForResult, etc
+    //Android specific commands Activity::finish(), startForResult, etc
 }
 
 

@@ -1,6 +1,5 @@
 package ru.skillbranch.sbdelivery.screens.dishes.ui
 
-//import ru.skillbranch.sbdelivery.screens.root.NavigateCommand
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,11 +45,29 @@ fun DishesToolbar(
 
     val scope = rememberCoroutineScope()
     val inputFlow: MutableSharedFlow<String> = remember { MutableSharedFlow() }
-    LaunchedEffect(key1 = state.isSearch ) {
+
+    // https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary
+    // Side-effects APIs such as LaunchedEffect, and SideEffect
+    // https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#SideEffect(kotlin.Function0)
+    // A SideEffect runs after every recomposition. To launch an ongoing
+    // task spanning potentially many recompositions, see LaunchedEffect.
+    // https://developer.android.com/jetpack/compose/side-effects
+
+    // The coroutine will be cancelled and re-launched when
+    // LaunchedEffect is recomposed with a different key1
+    // t.c. 02:19:00 recompose LaunchedEffect произойдет, когда
+    // DishesToolbar будет вызвана вновь. При этом корутина перезапустится,
+    // если key1 = true t.c. 02:26:00 ? Проверил - нет. И с true, и с false
+    // корутина запускается
+    LaunchedEffect(key1 = state.isSearch) {
         inputFlow
+            .onEach { Log.e("DishesToolbar", "before debounce $it") }
+            // t.c. 02:24:00 важные паяснения про то, что debounce
+            // работает некорректно со scope.launch в Composable окружении
             .debounce(500)
+            .onEach { Log.e("DishesToolbar", "after debounce $it") }
             .collect {
-                Log.e("DishesToolbar", "collect")
+                Log.e("DishesToolbar", "collect $it")
                 accept(DishesFeature.Msg.UpdateSuggestionResult(it))
             }
     }
@@ -104,8 +121,10 @@ fun SearchToolbar(
                     onClick = { onSearchToggle() },
                     content = {
                         Icon(
-                            tint = if (!isSearch) MaterialTheme.colors.secondary else MaterialTheme.colors.onPrimary,
-                            painter = painterResource(if (!isSearch) R.drawable.ic_search_dishes else R.drawable.ic_baseline_close_24),
+                            tint = if (!isSearch) MaterialTheme.colors.secondary
+                            else MaterialTheme.colors.onPrimary,
+                            painter = painterResource(if (!isSearch) R.drawable.ic_search_dishes
+                            else R.drawable.ic_baseline_close_24),
                             contentDescription = null
                         )
                     })
@@ -224,7 +243,7 @@ private fun CustomSearchField(
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         onSubmit?.invoke(input)
-                        keyboardController?.hideSoftwareKeyboard()
+                        keyboardController?.hide()
                     },
                 ),
             )
@@ -263,7 +282,7 @@ fun SuggestionsToolbarPreview() {
                     input = "search test",
                     isSearch = true,
                     suggestions = mapOf("test" to 4, "search" to 2)
-                ), 0, {}, {})
+                ), 3, {}, {})
         }
 
     }

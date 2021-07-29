@@ -41,9 +41,9 @@ class EffDispatcher @Inject constructor(
 
             is Eff.Notification -> _notifyChannel.send(effect)
             is Eff.Navigate -> {
-                //handle navigate
-                //to downstream and handle in activity layer
-                //or handle in state layer
+                // t.c. 01:33:00 можно реализовать навигацю одним из двух способов:
+                // 1. to downstream and handle in activity layer
+                // 2. or handle in state layer
                 commit(Msg.Navigate(effect.cmd))
             }
             is Eff.Cmd -> _commandChannel.send(effect.cmd)

@@ -20,17 +20,24 @@ import ru.skillbranch.sbdelivery.screens.cart.data.ConfirmDialogState
 fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
     when (state.list) {
         is CartUiState.Value -> {
-            Column() {
+            Column {
                 LazyColumn(
                     contentPadding = PaddingValues(0.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     content = {
                         val items = state.list.dishes
                         items(items = items, key = { it.id }) {
-                            CartListItem(it,
-                                onProductClick = { dishId: String, title: String -> accept(CartFeature.Msg.ClickOnDish(dishId, title))},
-                                onIncrement = { dishId -> accept(CartFeature.Msg.IncrementCount(dishId))},
-                                onDecrement = { dishId -> accept(CartFeature.Msg.DecrementCount(dishId))},
+                            CartListItem(
+                                dish = it,
+                                onProductClick = { dishId: String, title: String ->
+                                    accept(CartFeature.Msg.ClickOnDish(dishId, title))
+                                },
+                                onIncrement = { dishId ->
+                                    accept(CartFeature.Msg.IncrementCount(dishId))
+                                },
+                                onDecrement = { dishId ->
+                                    accept(CartFeature.Msg.DecrementCount(dishId))
+                                },
                                 onRemove = { dishId, title ->/*TODO*/ }
                             )
                         }
@@ -44,7 +51,7 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
                     verticalArrangement = Arrangement.Bottom
                 ) {
                     Row() {
-                        val total = state.list.dishes.sumBy { it.count * it.price }
+                        val total = state.list.dishes.sumOf { it.count * it.price }
                         Text(
                             "Итого",
                             fontSize = 24.sp,

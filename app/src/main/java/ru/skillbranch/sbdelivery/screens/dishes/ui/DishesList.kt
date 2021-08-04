@@ -27,8 +27,8 @@ import ru.skillbranch.sbdelivery.screens.root.ui.AppTheme
 @Composable
 fun DishItem(
     dish: DishItem,
-    onClick: (dishId: DishItem) -> Unit,
-    addToCart: (dishId: DishItem) -> Unit
+    onClick: (dish: DishItem) -> Unit,
+    addToCart: (dish: DishItem) -> Unit
 ) {
     Card(Modifier.requiredHeight(250.dp)) {
         ConstraintLayout(Modifier.clickable { onClick(dish) }) {
@@ -113,12 +113,12 @@ fun DishItem(
 @Composable
 fun <T> LazyGrid(
     items: List<T> = listOf(),
-    rows: Int = 2,
+    itemsInRow: Int = 2,
     contentPadding: Dp = 8.dp,
     verticalPadding: Dp = 8.dp,
     itemContent: @Composable LazyItemScope.(T) -> Unit
 ) {
-    val chunkedList = items.chunked(rows)
+    val chunkedList = items.chunked(itemsInRow)
     LazyColumn(
         contentPadding = PaddingValues(contentPadding),
         verticalArrangement = Arrangement.spacedBy(verticalPadding),

@@ -44,6 +44,7 @@ fun DishesToolbar(
 ) {
 
     val scope = rememberCoroutineScope()
+    // Поток ввода символов в строку поиска. Используется для обновления подсказок
     val inputFlow: MutableSharedFlow<String> = remember { MutableSharedFlow() }
 
     // https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary

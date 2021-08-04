@@ -1,5 +1,6 @@
 package ru.skillbranch.sbdelivery.repository
 
+import android.util.Log
 import ru.skillbranch.sbdelivery.data.db.dao.CartDao
 import ru.skillbranch.sbdelivery.data.db.dao.DishesDao
 import ru.skillbranch.sbdelivery.data.db.entity.CartItemPersist
@@ -11,7 +12,7 @@ import ru.skillbranch.sbdelivery.screens.dishes.data.DishItem
 import javax.inject.Inject
 
 interface IDishesRepository {
-    suspend fun searchDishes(newInput: String): List<DishItem>
+    suspend fun searchDishes(query: String): List<DishItem>
     suspend fun isEmptyDishes(): Boolean
     suspend fun syncDishes()
     suspend fun findDishes(): List<DishItem>
@@ -28,7 +29,7 @@ class DishesRepository @Inject constructor(
 ) : IDishesRepository {
 
     override suspend fun searchDishes(query: String): List<DishItem> {
-        return if (query.isEmpty()) findDishes()
+        return if (query.isBlank()) findDishes()
         else dishesDao.findDishesFrom(query)
             .map { it.toDishItem() }
     }
@@ -52,12 +53,29 @@ class DishesRepository @Inject constructor(
         dishesDao.findAllDishes().map { it.toDishItem() }
 
     override suspend fun findSuggestions(query: String): Map<String, Int> {
-        return mapOf(
-            "test" to 4,
-            "test2" to 2,
-            "test3" to 1,
-        )
-//        TODO("Not yet implemented")
+        // Надо вернуть мапу из пар (ключ/значение), где
+        // ключ - название блюда, содержащее в себе query-подстроку,
+        // значение - количество блюд с таким названием в магазине
+        val suggs = mutableMapOf<String, Int>()
+        if (query.isBlank()) return suggs
+        else dishesDao.findDishesFrom(query)
+            .map { dish ->
+                    // Индекс первого вхождения запроса в имя блюда
+                    val idx = dish.name.indexOf(query.trim(), ignoreCase = true)
+                    // Сдвигаем индекс на следующий после запроса символ
+                    var j = idx + query.trim().length
+                    while (j < dish.name.length) {
+                        // Ищем индекс символа, оканчивающего слово
+                        if (dish.name[j] == ' ') break
+                        j++
+                    }
+                    val shortName = dish.name.substring(0, j)
+                    // Мерджим блюда с одинакомым shortName в одну запись
+                    // и учитываем их количество
+                    suggs.merge(shortName, 1) { i: Int, _: Int -> i + 1 }
+            }
+        Log.e("TAG", "findSuggestions: suggestions => $suggs")
+        return suggs
     }
 
     override suspend fun addDishToCart(id: String) {

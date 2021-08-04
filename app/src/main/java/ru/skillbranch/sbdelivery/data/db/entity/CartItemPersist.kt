@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "cart_items")
 data class CartItemPersist(
-    @PrimaryKey(autoGenerate = true) val id: Long =0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val dishId: String,
     val count: Int = 1
 )

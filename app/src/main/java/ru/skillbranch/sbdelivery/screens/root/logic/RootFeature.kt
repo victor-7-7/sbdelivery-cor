@@ -15,13 +15,15 @@ import java.io.Serializable
 
 object RootFeature {
 
+    // Вызывается только при запуске приложения в двух местах.
+    // 1. При инициализации _state. 2.
     private fun initialState(): RootState = RootState(
         screens = mapOf(
             DishesFeature.route to ScreenState.Dishes(DishesFeature.initialState()),
             DishFeature.route to ScreenState.Dish(DishFeature.initialState()),
             CartFeature.route to ScreenState.Cart(CartFeature.initialState()),
         ),
-        currentRoute = DishesFeature.route
+        currentRoute = DishesFeature.route // <-- "dishes"
     )
 
     // 35:07
@@ -58,13 +60,25 @@ object RootFeature {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun listen(scope: CoroutineScope, effDispatcher: IEffHandler<Eff, Msg>, initState: RootState?) {
         Log.e("RootFeature", "Start listen init state: $initState")
+        // При запуске приложения initState = null
         _scope = scope
         _scope.launch {
             mutations.onEach { Log.e("DemoEffHandler", "MUTATION $it") }
+                // fun <T, R> Flow<T>.scan(initial: R, operation: suspend (R, T) -> R): Flow<R>
+                // Folds the given flow with operation, emitting every intermediate result,
+                // including initial value.
+                // flowOf(1, 2, 3).scan(emptyList<Int>()) { acc, value -> acc + value }.toList()
+                // will produce [], [1], [1, 2], [1, 2, 3]]
                 .scan((initState ?: initialState()) to initialEffects()) { (s, _), m ->
+                    // При запуске приложения s = RootState(..., currentRoute=dishes,
+                    // backstack=[], cartCount=0), а m = Dishes(msg=ShowDishes(dishes=
+                    // [DishItem(...),DishItem...]))
+                    Log.e("DemoEffHandler", "Before reduceDispatcher: s => $s\nm => $m")
                     reduceDispatcher(s, m)
                 }
                 .collect { (s, eff) ->
+                    // При запуске приложения s = RootState(..., currentRoute=dishes,
+                    // backstack=[], cartCount=0), а eff = сет из SyncDishes и SyncCounter
                     _state.emit(s)
                     eff.forEach {
                         launch {

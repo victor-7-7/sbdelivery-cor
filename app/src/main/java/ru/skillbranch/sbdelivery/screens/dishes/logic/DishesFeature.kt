@@ -14,7 +14,7 @@ object DishesFeature {
         val input:String = "",
         val isSearch:Boolean = false,
         val suggestions: Map<String, Int> = emptyMap(),
-        val list: DishesUiState = DishesUiState.Loading
+        val uiState: DishesUiState = DishesUiState.Loading // had renamed list to uiState
     ): Serializable
 
     sealed class Msg{

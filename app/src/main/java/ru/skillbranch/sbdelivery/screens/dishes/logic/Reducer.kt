@@ -1,7 +1,6 @@
 package ru.skillbranch.sbdelivery.screens.dishes.logic
 
 import ru.skillbranch.sbdelivery.screens.dishes.data.DishesUiState
-import ru.skillbranch.sbdelivery.screens.dishes.logic.DishesFeature
 import ru.skillbranch.sbdelivery.screens.root.logic.Eff
 import ru.skillbranch.sbdelivery.screens.root.logic.NavigateCommand
 import ru.skillbranch.sbdelivery.screens.root.logic.RootState
@@ -32,7 +31,7 @@ fun DishesFeature.State.selfReduce(msg: DishesFeature.Msg): Pair<DishesFeature.S
 
         is DishesFeature.Msg.SearchInput -> copy(input = msg.newInput) to emptySet()
 
-        is DishesFeature.Msg.SearchSubmit -> copy(list = DishesUiState.Loading) to setOf(
+        is DishesFeature.Msg.SearchSubmit -> copy(uiState = DishesUiState.Loading) to setOf(
             DishesFeature.Eff.SearchDishes(msg.query)
         ).toEffs()
 
@@ -46,10 +45,10 @@ fun DishesFeature.State.selfReduce(msg: DishesFeature.Msg): Pair<DishesFeature.S
         is DishesFeature.Msg.ShowDishes -> {
             val dishes =
                 if (msg.dishes.isEmpty()) DishesUiState.Empty else DishesUiState.Value(msg.dishes)
-            copy(list = dishes, suggestions = emptyMap()) to emptySet()
+            copy(uiState = dishes, suggestions = emptyMap()) to emptySet()
         }
         is DishesFeature.Msg.ShowError -> TODO()
-        is DishesFeature.Msg.ShowLoading -> copy(list = DishesUiState.Loading) to emptySet()
+        is DishesFeature.Msg.ShowLoading -> copy(uiState = DishesUiState.Loading) to emptySet()
         is DishesFeature.Msg.ShowSuggestions -> copy(suggestions = msg.suggestions) to emptySet()
 
         is DishesFeature.Msg.SuggestionSelect -> {

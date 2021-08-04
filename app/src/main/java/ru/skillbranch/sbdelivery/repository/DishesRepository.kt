@@ -1,6 +1,5 @@
 package ru.skillbranch.sbdelivery.repository
 
-import kotlinx.coroutines.delay
 import ru.skillbranch.sbdelivery.data.db.dao.CartDao
 import ru.skillbranch.sbdelivery.data.db.dao.DishesDao
 import ru.skillbranch.sbdelivery.data.db.entity.CartItemPersist
@@ -34,16 +33,16 @@ class DishesRepository @Inject constructor(
             .map { it.toDishItem() }
     }
 
-    override suspend fun isEmptyDishes(): Boolean = true
+    override suspend fun isEmptyDishes(): Boolean = dishesDao.dishesCounts() == 0
 
     override suspend fun syncDishes() {
         val dishes = mutableListOf<DishRes>()
         var offset = 0
         while (true) {
-            val res = api.getDishes(offset * 10, 10)
-            if (res.isSuccessful) {
+            val resp = api.getDishes(offset * 10, 10)
+            if (resp.isSuccessful) {
                 offset++
-                dishes.addAll(res.body()!!)
+                dishes.addAll(resp.body()!!)
             } else break
         }
         dishesDao.insertDishes(dishes.map { it.toDishPersist() })

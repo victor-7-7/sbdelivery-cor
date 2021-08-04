@@ -16,6 +16,7 @@ class RootViewModel @Inject constructor(
     val feature = RootFeature
 
     init {
+        // При запуске приложения метод get вернет null
         val initState = savedState.get<RootState>("rootState")
         Log.e("RootViewModel", "initState")
         feature.listen(viewModelScope, dispatcher, initState)

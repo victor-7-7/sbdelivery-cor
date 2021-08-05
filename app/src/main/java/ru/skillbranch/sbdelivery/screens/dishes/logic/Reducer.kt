@@ -14,6 +14,7 @@ fun DishesFeature.State.selfReduce(msg: DishesFeature.Msg): Pair<DishesFeature.S
                 msg.title
             )
         ).toEffs()
+
         is DishesFeature.Msg.RemoveFromCart -> this to setOf(
             DishesFeature.Eff.RemoveFromCart(
                 msg.id,

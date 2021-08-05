@@ -18,14 +18,14 @@ import ru.skillbranch.sbdelivery.screens.cart.data.ConfirmDialogState
 
 @Composable
 fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
-    when (state.list) {
-        is CartUiState.Value -> {
+    when (state.uiState) {
+        is CartUiState.Content -> {
             Column {
                 LazyColumn(
                     contentPadding = PaddingValues(0.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     content = {
-                        val items = state.list.dishes
+                        val items = state.uiState.dishes
                         items(items = items, key = { it.id }) {
                             CartListItem(
                                 dish = it,
@@ -38,7 +38,10 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
                                 onDecrement = { dishId ->
                                     accept(CartFeature.Msg.DecrementCount(dishId))
                                 },
-                                onRemove = { dishId, title ->/*TODO*/ }
+                                onRemove = { dishId, title ->
+                                    // Предлагаем юзеру подтвердить удаление из корзины
+                                    accept(CartFeature.Msg.ShowConfirm(dishId, title))
+                                }
                             )
                         }
 
@@ -50,8 +53,8 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    Row() {
-                        val total = state.list.dishes.sumOf { it.count * it.price }
+                    Row {
+                        val total = state.uiState.dishes.sumOf { it.count * it.price }
                         Text(
                             "Итого",
                             fontSize = 24.sp,

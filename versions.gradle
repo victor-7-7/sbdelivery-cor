@@ -3,7 +3,7 @@ ext{
     coroutines_version = "1.5.1"
     core_ktx_version = "1.6.0"
     appcompat_version = "1.3.1"
-    activity_ktx_version = "1.3.0-rc02"
+    activity_ktx_version = "1.3.1"
     material_version = "1.4.0"
     vm_version = "2.3.1"
     room_version = "2.3.0"
@@ -21,7 +21,7 @@ ext{
     // https://stackoverflow.com/questions/67667099/java-lang-nosuchmethoderror-startrestartgroup-after-upgrading-jetpack-compose-to
     // Every library needs to be recompiled against xxxx to work
     // In your case you have to update the accompanist libraries with the yyyy
-    compose_version="1.0.0-rc02"
-    compose_activity_version="1.3.0-alpha04"
-    compose_constarint_version="1.0.0-beta01"
+    compose_version="1.1.0-alpha01"
+    compose_activity_version="1.3.1"
+    compose_constarint_version="1.0.0-beta02"
 }

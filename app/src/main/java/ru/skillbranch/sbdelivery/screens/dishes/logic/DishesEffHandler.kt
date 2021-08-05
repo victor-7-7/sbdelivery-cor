@@ -24,7 +24,7 @@ class DishesEffHandler @Inject constructor(
                 commit(Msg.UpdateCartCount(count))
                 notifyChannel.send(
                     Eff.Notification.Action(
-                        message = "${effect.title} добавлен в корзину",
+                        message = "${effect.title} успешно добавлен в корзину",
                         label = "Отмена",
                         action = Msg.Dishes(
                             DishesFeature.Msg.RemoveFromCart(

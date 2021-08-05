@@ -15,10 +15,10 @@ object CartFeature {
     data class State(
         val promo: String = "",
         val confirmDialog: ConfirmDialogState = ConfirmDialogState.Hide,
-        val list: CartUiState = CartUiState.Empty
+        val uiState: CartUiState = CartUiState.Empty
     ): Serializable
 
-    sealed class Eff{
+    sealed class Eff {
         object LoadCart: Eff()
         data class  IncrementItem(val dishId: String): Eff()
         data class  DecrementItem(val dishId: String): Eff()

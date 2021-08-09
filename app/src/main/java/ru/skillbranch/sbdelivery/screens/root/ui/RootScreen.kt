@@ -41,7 +41,7 @@ fun RootScreen(vm: RootViewModel) {
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar= { AppbarHost(vm) },
+        topBar = { AppbarHost(vm) },
         content = { ContentHost(vm) }
     )
 }
@@ -50,6 +50,10 @@ fun RootScreen(vm: RootViewModel) {
 @ExperimentalFoundationApi
 @Composable
 fun ContentHost(vm: RootViewModel) {
+    // collectAsState => Collects values from this StateFlow and represents its
+    // latest value via State. The StateFlow.value is used as an initial value.
+    // Every time there would be new value posted into the StateFlow the returned
+    // State will be updated causing recomposition of every State.value usage
     val state: RootState by vm.feature.state.collectAsState()
     val screen: ScreenState = state.current
     // t.c. 02:16:00 при возврате на предыдущий скрин, если его стейт не изменился,
@@ -63,9 +67,7 @@ fun ContentHost(vm: RootViewModel) {
             is ScreenState.Cart -> CartScreen(currentScreen.state) { vm.accept(Msg.Cart(it)) }
         }
     }
-
 }
-
 
 @Composable
 fun Navigation(
@@ -95,14 +97,18 @@ fun Navigation(
 @ExperimentalComposeUiApi
 @Composable
 fun AppbarHost(vm: RootViewModel) {
+    // collectAsState => Collects values from this StateFlow and represents its
+    // latest value via State. The StateFlow.value is used as an initial value.
+    // Every time there would be new value posted into the StateFlow the returned
+    // State will be updated causing recomposition of every State.value usage
     val state: RootState by vm.feature.state.collectAsState()
     when (val screen: ScreenState = state.current) {
         is ScreenState.Dishes -> DishesToolbar(
             state = screen.state,
             cartCount = state.cartCount,
             accept = { vm.accept(Msg.Dishes(it)) },
-            navigate = vm::navigate)
-
+            navigate = vm::navigate
+        )
         else -> DefaultToolbar(title = screen.title, cartCount = state.cartCount, navigate =  vm::navigate  )
     }
 }

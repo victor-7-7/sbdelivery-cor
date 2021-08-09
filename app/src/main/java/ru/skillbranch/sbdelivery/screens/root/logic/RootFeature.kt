@@ -39,10 +39,12 @@ object RootFeature {
     // the value property
     /** Горячий разделяемый поток стейтов RootState */
     private val _state: MutableStateFlow<RootState> = MutableStateFlow(initialState())
-    // Свойство, доступное снаружи, должно быть read-only
+    // Свойство, доступное снаружи, должно быть read-only. К этому стейт флоу
+    // в RootScreen приколлекчены два композбла - ContentHost и AppbarHost
     val state
         get() = _state.asStateFlow()
 
+    // Это будет скоуп вьюмодели RootViewModel
     private lateinit var _scope: CoroutineScope
 
     // SharedFlow is a hot Flow that shares emitted values among all its collectors
@@ -53,12 +55,25 @@ object RootFeature {
     /** Горячий разделяемый поток сообщений Msg */
     private val mutations: MutableSharedFlow<Msg> = MutableSharedFlow()
 
+    /** Сердцевинная функция, на которую завязана вся интерактивность приложения.
+     * Она во вьюмодельном корутинном скоупе эмитит очередной мессидж в горячий
+     * разделяемый поток мутаций. Эта функция вызывается в хэндлерах эффектов
+     * под именем commit, а в композблах ContentHost и AppbarHost она вызывается
+     * под именем accept (композблы дотягиваются до нее через вьюмодель)*/
     fun mutate(mutation: Msg) {
         _scope.launch {
             mutations.emit(mutation)
         }
     }
 
+    /** Вьюмодель при своей инициализации вызывает функцию listen() и последняя собирает
+     * реактивную систему. Сначала каждый мессидж потока мутаций трансформируется
+     * (через reduceDispatcher) в пару из стейта и набора эффектов, затем пара попадает
+     * в подсоединенный к потоку коллектор. В нем стейт из пары эмитится в горячий
+     * разделяемый поток стейтов (на поток стейтов реагируют в RootScreen два композбла -
+     * ContentHost и AppbarHost). Затем каждый эффект из набора передается в диспетчер
+     * эффектов для дальнейшей обработки. Вторым параметром в диспетчер передается (под
+     * именем commit) ссылка на функцию mutate(msg) */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun listen(scope: CoroutineScope, effDispatcher: IEffHandler<Eff, Msg>, initState: RootState?) {
         Log.e("RootFeature", "Start listen init state: $initState")

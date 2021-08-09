@@ -29,9 +29,9 @@ class EffDispatcher @Inject constructor(
     // collected. One element will be emitted to one collector only
 
     // К этому флоу, связанному с чаннелом эффектов-нотификаций,
-    // приконнекчен компоузбл RootScreen
+    // приколлекчен компоузбл RootScreen
     val notifications = _notifyChannel.receiveAsFlow()
-    // К этому флоу, связанному с чаннелом андроид-команд, приконнекчена RootActivity
+    // К этому флоу, связанному с чаннелом андроид-команд, приколлекчена RootActivity
     val androidCommands = _commandChannel.receiveAsFlow()
 
     override suspend fun handle(effect: Eff, commit: (Msg) -> Unit) {

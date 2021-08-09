@@ -56,6 +56,10 @@ dependencies {
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.core:core-ktx:$core_ktx_version"
 
+    // Gson
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
     // Jetpack
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.activity:activity-ktx:$activity_ktx_version"

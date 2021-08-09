@@ -42,7 +42,7 @@ fun DishesScreen(state: DishesFeature.State, accept: (DishesFeature.Msg) -> Unit
             CircularProgressIndicator(color = MaterialTheme.colors.secondary)
         }
 
-        is DishesUiState.Value -> LazyGrid(items = state.uiState.dishes) {
+        is DishesUiState.Things -> LazyGrid(items = state.uiState.dishes) {
             DishItem(
                 dish = it,
                 onClick = { dish -> accept(DishesFeature.Msg.ClickDish(dish.id, dish.title)) },

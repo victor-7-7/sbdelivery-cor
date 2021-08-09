@@ -19,7 +19,7 @@ import ru.skillbranch.sbdelivery.screens.cart.data.ConfirmDialogState
 @Composable
 fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
     when (state.uiState) {
-        is CartUiState.Content -> {
+        is CartUiState.Things -> {
             Column {
                 LazyColumn(
                     contentPadding = PaddingValues(0.dp),

@@ -1,9 +1,11 @@
 package ru.skillbranch.sbdelivery.screens.dishes.logic
 
+import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.screens.dishes.data.DishItem
 import ru.skillbranch.sbdelivery.screens.dishes.data.DishesUiState
 import java.io.Serializable
 
+@LogClassMethods
 object DishesFeature {
     fun initialState(): State  = State()
     fun initialEffects(): Set<Eff>  = setOf(Eff.SyncDishes)
@@ -41,6 +43,7 @@ object DishesFeature {
 
         // Взять из сети и записать в БД
         object SyncDishes : Eff()
+
         object FindAllDishes : Eff()
     }
 }

@@ -1,25 +1,42 @@
 package ru.skillbranch.sbdelivery.screens.dish.logic
 
+import android.util.Log
+import ru.skillbranch.sbdelivery.aop.LogAspect
 import ru.skillbranch.sbdelivery.screens.dish.data.DishUiState
 import ru.skillbranch.sbdelivery.screens.dish.data.ReviewUiState
 import ru.skillbranch.sbdelivery.screens.root.logic.Eff
 import ru.skillbranch.sbdelivery.screens.root.logic.RootState
 import ru.skillbranch.sbdelivery.screens.root.logic.ScreenState
 
-fun DishFeature.State.selfReduce(msg: DishFeature.Msg) : Pair<DishFeature.State, Set<Eff>> =
-    when(msg){
+fun DishFeature.State.selfReduce(msg: DishFeature.Msg) : Pair<DishFeature.State, Set<Eff>> {
+    Log.v(LogAspect.tag, ">>>--------DishFeature.State.selfReduce()")
+    val pair = when (msg) {
         is DishFeature.Msg.AddToCart -> TODO()
         is DishFeature.Msg.DecrementCount -> TODO()
         is DishFeature.Msg.HideReviewDialog -> TODO()
         is DishFeature.Msg.IncrementCount -> TODO()
         is DishFeature.Msg.SendReview -> TODO()
-        is DishFeature.Msg.ShowDish -> copy(content = DishUiState.Value(msg.dish)) to emptySet()
+        is DishFeature.Msg.ShowDish -> copy(content = DishUiState.Thing(msg.dish)) to emptySet<Eff>()
         is DishFeature.Msg.ShowReviewDialog -> TODO()
-        is DishFeature.Msg.ShowReviews -> copy(reviews = ReviewUiState.Value(msg.reviews)) to emptySet()
+        is DishFeature.Msg.ShowReviews -> copy(reviews = ReviewUiState.Content(msg.reviews)) to emptySet()
         is DishFeature.Msg.ToggleLike -> TODO()
     }
+    Log.v(LogAspect.tag,  "Params(selfReduce): [msg = $msg]| Return Value: $pair")
+    Log.v(LogAspect.tag, "<<<--------DishFeature.State.selfReduce()")
+    return pair
+}
 
 fun  DishFeature.State.reduce(root: RootState, msg: DishFeature.Msg) : Pair<RootState, Set<Eff>> {
+    Log.v(LogAspect.tag, ">>>--------DishFeature.State.reduce()")
     val (screenState, effs) = selfReduce(msg)
-    return root.changeCurrentScreen<ScreenState.Dish> { copy(state = screenState) } to effs
+    val pair = root.changeCurrentScreen<ScreenState.Dish> { copy(state = screenState) } to effs
+    val rootV = "$root".replace(LogAspect.regex, LogAspect.replacement)
+    val msgV = "$msg".replace(LogAspect.regex, LogAspect.replacement)
+    val pairF = "${pair.first}".replace(LogAspect.regex, LogAspect.replacement)
+    val pairS = "${pair.second}".replace(LogAspect.regex, LogAspect.replacement)
+    Log.v(LogAspect.tag,  "Params(reduce): [root = $rootV] [msg = $msgV] | Return Value: pairF => $pairF *** pairS => $pairS")
+    Log.v(LogAspect.tag, "<<<--------DishFeature.State.reduce()")
+    return pair
 }
+
+private fun Set<DishFeature.Eff>.toEffs(): Set<Eff> = mapTo(HashSet(), Eff::Dish)

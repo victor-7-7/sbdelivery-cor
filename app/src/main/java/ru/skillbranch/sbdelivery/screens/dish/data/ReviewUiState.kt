@@ -5,6 +5,7 @@ import java.io.Serializable
 
 sealed class ReviewUiState : Serializable {
     object Loading : ReviewUiState()
-    data class Value(val list: List<ReviewRes>) : ReviewUiState()
+    // Отзывы покупателей?
+    data class Content(val list: List<ReviewRes>) : ReviewUiState()
     object Empty : ReviewUiState()
 }

@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.screens.cart.logic.CartFeature
 import ru.skillbranch.sbdelivery.screens.cart.logic.reduce
 import ru.skillbranch.sbdelivery.screens.dish.logic.DishFeature
@@ -13,10 +14,11 @@ import ru.skillbranch.sbdelivery.screens.dishes.logic.DishesFeature
 import ru.skillbranch.sbdelivery.screens.dishes.logic.reduce
 import java.io.Serializable
 
+@LogClassMethods
 object RootFeature {
 
-    // Вызывается только при запуске приложения в двух местах.
-    // 1. При инициализации _state. 2.
+    // Функция вызывается только при запуске приложения в двух местах.
+    // 1. При инициализации _state. 2. При эмите первого мессиджа в поток мутаций
     private fun initialState(): RootState = RootState(
         screens = mapOf(
             DishesFeature.route to ScreenState.Dishes(DishesFeature.initialState()),
@@ -60,15 +62,20 @@ object RootFeature {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun listen(scope: CoroutineScope, effDispatcher: IEffHandler<Eff, Msg>, initState: RootState?) {
         Log.e("RootFeature", "Start listen init state: $initState")
-        // При запуске приложения initState = null
         _scope = scope
         _scope.launch {
             mutations.onEach { Log.e("DemoEffHandler", "MUTATION $it") }
                 // fun <T, R> Flow<T>.scan(initial: R, operation: suspend (R, T) -> R): Flow<R>
                 // Folds the given flow with operation, emitting every intermediate result,
                 // including initial value.
-                // flowOf(1, 2, 3).scan(emptyList<Int>()) { acc, value -> acc + value }.toList()
-                // will produce [], [1], [1, 2], [1, 2, 3]]
+                // flowOf(1, 2, 3).scan(emptyList<Int>()) { acc, value -> acc + value }
+                // will produce [], [1], [1, 2], [1, 2, 3]
+                // При запуске приложения initState = null. Начальная пара для свертки:
+                // RootState (мапа из трех экранов, текущий рут "dishes"...) и сет из
+                // двух эффектов - SyncDishes и SyncCounter. Эта начальная пара будет
+                // проэмичена в коллектор. Затем в коллектор будут эмитится пары, являющиеся
+                // результатом свертки (в функции reduceDispatcher) текущей (проэмиченой
+                // до того) пары и очередного мессиджа
                 .scan((initState ?: initialState()) to initialEffects()) { (s, _), m ->
                     // При запуске приложения s = RootState(..., currentRoute=dishes,
                     // backstack=[], cartCount=0), а m = Dishes(msg=ShowDishes(dishes=
@@ -78,10 +85,16 @@ object RootFeature {
                 }
                 .collect { (s, eff) ->
                     // При запуске приложения s = RootState(..., currentRoute=dishes,
-                    // backstack=[], cartCount=0), а eff = сет из SyncDishes и SyncCounter
+                    // backstack=[], cartCount=0), а eff = сет из SyncDishes и SyncCounter.
+                    // Эмитим очередной стейт, чтобы подписчики на поток стейтов среагировали
                     _state.emit(s)
+                    // Разбираемся с очередным набором эффектов (в отдельных корутинах)
                     eff.forEach {
                         launch {
+                            // Каждый эффект (из очередного набора) передаем в рутовый
+                            // диспетчер в его метод handle вместе с блоком mutate
+                            // (этот блок в отдельной корутине эмитит соответствующий
+                            // мессидж в поток мутаций)
                             effDispatcher.handle(it, RootFeature::mutate)
                         }
                     }
@@ -110,6 +123,7 @@ object RootFeature {
         }
 }
 
+@LogClassMethods
 data class RootState(
     val screens: Map<String, ScreenState>,
     val currentRoute: String,
@@ -127,6 +141,7 @@ data class RootState(
     }
 }
 
+@LogClassMethods
 sealed class ScreenState(
     val route: String,
     val title: String
@@ -141,6 +156,7 @@ sealed class ScreenState(
         ScreenState(CartFeature.route, "Корзина")
 }
 
+@LogClassMethods
 sealed class Msg {
     data class Dishes(val msg: DishesFeature.Msg) : Msg()
     data class Dish(val msg: DishFeature.Msg) : Msg()
@@ -151,11 +167,10 @@ sealed class Msg {
 
     //Root mutation
     data class UpdateCartCount(val count: Int) : Msg()
-
 }
 
+@LogClassMethods
 sealed class Eff {
-
     data class Dishes(val eff: DishesFeature.Eff) : Eff()
     data class Dish(val eff: DishFeature.Eff) : Eff()
     data class Cart(val eff: CartFeature.Eff) : Eff()
@@ -179,18 +194,15 @@ sealed class Eff {
     data class Cmd(val cmd: Command) : Eff()
 }
 
+@LogClassMethods
 sealed class NavigateCommand {
     data class ToDishItem(val id: String, val title: String) : NavigateCommand()
-    object ToBack : NavigateCommand()
     object ToCart : NavigateCommand()
+    object ToBack : NavigateCommand()
 }
 
+@LogClassMethods
 sealed class Command {
     object Finish : Command()
     //Android specific commands Activity::finish(), startForResult, etc
-}
-
-
-interface IEffHandler<E, M> {
-    suspend fun handle(effect: E, commit: (M) -> Unit)
 }

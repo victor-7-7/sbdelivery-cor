@@ -1,10 +1,12 @@
 package ru.skillbranch.sbdelivery.screens.cart.logic
 
+import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.screens.cart.data.CartItem
 import ru.skillbranch.sbdelivery.screens.cart.data.CartUiState
 import ru.skillbranch.sbdelivery.screens.cart.data.ConfirmDialogState
 import java.io.Serializable
 
+@LogClassMethods
 object CartFeature {
 
     const val route = "cart"

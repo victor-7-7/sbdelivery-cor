@@ -1,10 +1,12 @@
 package ru.skillbranch.sbdelivery.screens.root.logic
 
+import android.util.Log
+import ru.skillbranch.sbdelivery.aop.LogAspect
 import ru.skillbranch.sbdelivery.screens.cart.logic.CartFeature
 import ru.skillbranch.sbdelivery.screens.dish.logic.DishFeature
 
 fun RootState.reduceNavigate(msg: NavigateCommand): Pair<RootState, Set<Eff>> {
-
+    Log.v(LogAspect.tag, ">>>--------RootState.reduceNavigate")
     // t.c. 01:56:30 если текущий экран (с которого уходим) является
     // экраном "dish", то в сет закидываем эффект терминации корутин,
     // выполняющихся на экране в момент, когда мы уходим с экрана.
@@ -14,7 +16,7 @@ fun RootState.reduceNavigate(msg: NavigateCommand): Pair<RootState, Set<Eff>> {
         else -> emptySet()
     }
 
-    return when (msg) {
+    val pair = when (msg) {
         // Была нажата либо кнопка "назад" в тулбаре (рут-экран не имеет этой кнопки),
         // либо системная кнопка back key девайса
         is NavigateCommand.ToBack -> {
@@ -87,6 +89,13 @@ fun RootState.reduceNavigate(msg: NavigateCommand): Pair<RootState, Set<Eff>> {
             newState to newEffs
         }
     // Прежде чем вернуть пару из reduceNavigate() докидываем
-    // в сет (второй элемент пары) элементы из сета navEffs
+    // в сет (во второй элемент пары) элементы из сета navEffs
     }.run { first to second.plus(navEffs) }
+
+    val msgV = "$msg".replace(LogAspect.regex, LogAspect.replacement)
+    val pairF = "${pair.first}".replace(LogAspect.regex, LogAspect.replacement)
+    val pairS = "${pair.second}".replace(LogAspect.regex, LogAspect.replacement)
+    Log.v(LogAspect.tag,  "Params(reduceNavigate): [msg = $msgV]| Return Value: pairF => $pairF *** pairS => $pairS")
+    Log.v(LogAspect.tag, "<<<--------RootState.reduceNavigate")
+    return pair
 }

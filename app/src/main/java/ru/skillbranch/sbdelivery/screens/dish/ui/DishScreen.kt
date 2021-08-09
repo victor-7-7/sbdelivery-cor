@@ -31,7 +31,7 @@ import androidx.compose.runtime.setValue
 @Composable
 fun DishScreen(state: DishFeature.State, accept: (DishFeature.Msg) -> Unit) {
     when (state.content) {
-        is DishUiState.Value -> {
+        is DishUiState.Thing -> {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 DishContent(dish = state.content.data, count = state.count, accept = accept)
                 DishReviews(reviews = state.reviews, rating = state.rating, accept = accept)

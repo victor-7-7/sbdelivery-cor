@@ -2,6 +2,7 @@ package ru.skillbranch.sbdelivery.screens.root.logic
 
 import android.util.Log
 import ru.skillbranch.sbdelivery.aop.LogAspect
+import ru.skillbranch.sbdelivery.aop.doMoreClean
 import ru.skillbranch.sbdelivery.screens.cart.logic.CartFeature
 import ru.skillbranch.sbdelivery.screens.dish.logic.DishFeature
 
@@ -92,9 +93,9 @@ fun RootState.reduceNavigate(msg: NavigateCommand): Pair<RootState, Set<Eff>> {
     // в сет (во второй элемент пары) элементы из сета navEffs
     }.run { first to second.plus(navEffs) }
 
-    val msgV = "$msg".replace(LogAspect.regex, LogAspect.replacement)
-    val pairF = "${pair.first}".replace(LogAspect.regex, LogAspect.replacement)
-    val pairS = "${pair.second}".replace(LogAspect.regex, LogAspect.replacement)
+    val msgV = "$msg".doMoreClean()
+    val pairF = "${pair.first}".doMoreClean()
+    val pairS = "${pair.second}".doMoreClean()
     Log.v(LogAspect.tag,  "Params(reduceNavigate): [msg = $msgV]| Return Value: pairF => $pairF *** pairS => $pairS")
     Log.v(LogAspect.tag, "<<<--------RootState.reduceNavigate")
     return pair

@@ -97,7 +97,8 @@ fun DishItem(
                         bottom.linkTo(poster.bottom)
                         end.linkTo(parent.end, margin = 16.dp)
                     },
-                onClick = { addToCart(dish) }) {
+                onClick = { addToCart(dish) }
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_add_product),
                     contentDescription = "Add Icon",
@@ -118,19 +119,22 @@ fun <T> LazyGrid(
     verticalPadding: Dp = 8.dp,
     itemContent: @Composable LazyItemScope.(T) -> Unit
 ) {
+    // List<List<T>>. Делим список на списки по два блюда и затем
+    // собираем двухблюдные списки в новый список
     val chunkedList = items.chunked(itemsInRow)
     LazyColumn(
         contentPadding = PaddingValues(contentPadding),
         verticalArrangement = Arrangement.spacedBy(verticalPadding),
     ) {
-
-        items(chunkedList) { item ->
+        items(chunkedList) { rowList ->
+            // Для каждого двухблюдного списка строим горизонтальный ряд из его блюд
             Row {
-                repeat(item.size) {
+                repeat(rowList.size) {
                     Box(modifier = Modifier.weight(0.5f)) {
-                        itemContent(item[it])
+                        itemContent(rowList[it])
                     }
-                    if (it < item.size.dec()) Spacer(modifier = Modifier.width(8.dp))
+                    // К блюдам в ряду (кроме последнего) добавляем вертикальный спейсер
+                    if (it < rowList.size.dec()) Spacer(modifier = Modifier.width(8.dp))
                 }
             }
         }

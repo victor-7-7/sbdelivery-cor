@@ -65,6 +65,7 @@ class LogAspect {
                 // Дело в том, что dishes-список движок не показывает полностью, а обрезает
                 val pv = "$v".replace(regex, replacement)
                     .replace("ru.skillbranch.sbdelivery.screens.", "")
+                    .replace("ru.skillbranch.sbdelivery.repository.", "")
                 paramsStr += "[${paramsNames[idx]} = $pv]"
             }
             val retN = signature.returnType.simpleName
@@ -86,6 +87,7 @@ class LogAspect {
 
 fun String.doMoreClean() = replace(LogAspect.regex, LogAspect.replacement)
     .replace("ru.skillbranch.sbdelivery.screens.", "")
+    .replace("ru.skillbranch.sbdelivery.repository.", "")
 
 // @Retention(AnnotationRetention.RUNTIME) // <- default
 @Target(AnnotationTarget.CLASS)

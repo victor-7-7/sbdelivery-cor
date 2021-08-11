@@ -24,7 +24,7 @@ object CartFeature {
         object LoadCart: Eff()
         data class  IncrementItem(val dishId: String): Eff()
         data class  DecrementItem(val dishId: String): Eff()
-        data class RemoveItem(val dishId: String): Eff()
+        data class RemoveItem(val id: String, val title:String): Eff()
         data class SendOrder(val order: Map<String, Int>) : Eff()
     }
 
@@ -35,7 +35,7 @@ object CartFeature {
         data class IncrementCount(val dishId:String) : Msg()
         data class DecrementCount(val dishId:String) : Msg()
         data class ShowCart(val cart: List<CartItem>) : Msg()
-        data class RemoveFromCart(val dishId: String) :Msg()
+        data class RemoveFromCart(val id: String, val title:String) :Msg()
         data class ClickOnDish(val dishId: String, val title: String) :Msg()
     }
 }

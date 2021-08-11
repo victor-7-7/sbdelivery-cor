@@ -12,7 +12,7 @@ fun RootState.reduceNavigate(msg: NavigateCommand): Pair<RootState, Set<Eff>> {
     // экраном "dish", то в сет закидываем эффект терминации корутин,
     // выполняющихся на экране в момент, когда мы уходим с экрана.
     // Эти корутины будут прерваны
-    val navEffs : Set<Eff> = when(current){
+    val navEffs : Set<Eff> = when(currentScrSt){
         is ScreenState.Dish -> setOf(Eff.Dish(DishFeature.Eff.Terminate))
         else -> emptySet()
     }
@@ -62,12 +62,12 @@ fun RootState.reduceNavigate(msg: NavigateCommand): Pair<RootState, Set<Eff>> {
 
         is NavigateCommand.ToCart -> {
             //return if on cart screen (single top)
-            if(current.route === CartFeature.route) return this to emptySet()
+            if(currentScrSt.route === CartFeature.route) return this to emptySet()
 
-            val newBackstack = backstack.plus(current)
+            val newBackstack = backstack.plus(currentScrSt)
             var newState = copy(currentRoute = CartFeature.route, backstack = newBackstack)
-            newState = newState.changeCurrentScreen<ScreenState.Cart> {
-                copy(state = CartFeature.initialState())
+            newState = newState.updateCurrentScreenState<ScreenState.Cart> {
+                copy(cartState = CartFeature.initialState())
             }
             val newEffs = CartFeature.initialEffects().mapTo(HashSet(), Eff::Cart)
             // Итоговая пара
@@ -75,11 +75,11 @@ fun RootState.reduceNavigate(msg: NavigateCommand): Pair<RootState, Set<Eff>> {
         }
 
         is NavigateCommand.ToDishItem -> {
-            val newBackstack = backstack.plus(current)
+            val newBackstack = backstack.plus(currentScrSt)
             var newState = copy(currentRoute = DishFeature.route, backstack = newBackstack)
-            newState = newState.changeCurrentScreen<ScreenState.Dish> {
+            newState = newState.updateCurrentScreenState<ScreenState.Dish> {
                 copy(
-                    state = DishFeature.State(
+                    dishState = DishFeature.State(
                         id = msg.id,
                         title = msg.title
                     )

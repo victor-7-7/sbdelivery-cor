@@ -1,5 +1,6 @@
 package ru.skillbranch.sbdelivery.repository
 
+import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.data.db.dao.CartDao
 import ru.skillbranch.sbdelivery.data.network.RestService
 import ru.skillbranch.sbdelivery.data.toCartItem
@@ -15,6 +16,7 @@ interface ICartRepository {
     suspend fun clearCart()
 }
 
+@LogClassMethods
 class CartRepository @Inject constructor(
     private val api: RestService,
     private val cartDao: CartDao

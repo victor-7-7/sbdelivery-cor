@@ -1,5 +1,6 @@
 package ru.skillbranch.sbdelivery.repository
 
+import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.data.db.dao.CartDao
 import ru.skillbranch.sbdelivery.data.db.dao.DishesDao
 import ru.skillbranch.sbdelivery.data.network.RestService
@@ -17,6 +18,7 @@ interface IDishRepository {
     suspend fun sendReview(id: String, rating: Int, review: String): ReviewRes
 }
 
+@LogClassMethods
 class DishRepository @Inject constructor(
     private val api: RestService,
     private val dishesDao: DishesDao,

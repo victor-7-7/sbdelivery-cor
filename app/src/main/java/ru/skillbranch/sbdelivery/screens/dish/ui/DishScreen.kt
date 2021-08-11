@@ -1,5 +1,6 @@
 package ru.skillbranch.sbdelivery.screens.dish.ui
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,11 +26,14 @@ import ru.skillbranch.sbdelivery.screens.dish.data.DishUiState
 import ru.skillbranch.sbdelivery.screens.root.ui.AppTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import ru.skillbranch.sbdelivery.aop.LogAspect
+import ru.skillbranch.sbdelivery.aop.doMoreClean
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @Composable
 fun DishScreen(state: DishFeature.State, accept: (DishFeature.Msg) -> Unit) {
+    Log.w(LogAspect.tag, ">>>--------DishScreen() Params: [state = $state]")
     when (state.content) {
         is DishUiState.Thing -> {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -127,6 +131,7 @@ fun ReviewDialog(dishId: String, accept: (DishFeature.Msg) -> Unit) {
             }
         }
     }
+    Log.w(LogAspect.tag, "<<<--------DishScreen()")
 }
 
 @Composable

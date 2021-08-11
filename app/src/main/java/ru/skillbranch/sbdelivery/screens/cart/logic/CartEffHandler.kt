@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.repository.CartRepository
-import ru.skillbranch.sbdelivery.screens.dishes.logic.DishesFeature
 import ru.skillbranch.sbdelivery.screens.root.logic.Eff
 import ru.skillbranch.sbdelivery.screens.root.logic.IEffHandler
 import ru.skillbranch.sbdelivery.screens.root.logic.Msg
@@ -42,7 +41,7 @@ class CartEffHandler @Inject constructor(
             }
             is CartFeature.Eff.RemoveItem -> {
                 // Юзер уже подтвердил удаление товара из корзины
-                repository.removeItem(effect.dishId)
+                repository.removeItem(effect.id)
                 updateCart()
             }
             is CartFeature.Eff.SendOrder -> TODO()

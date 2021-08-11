@@ -134,6 +134,8 @@ fun CartStepper(
                 .clip(RoundedCornerShape(4.dp)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Декремент мы можем делать только когда данное блюдо
+            // присутствует в корзине в количестве 2 шт и больше
             if(value > 1){
                 IconButton(
                     onClick = { onDecrement?.invoke() },
@@ -163,6 +165,7 @@ fun CartStepper(
                 color = MaterialTheme.colors.secondary,
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             )
+
             IconButton(
                 onClick = { onIncrement?.invoke() },
                 content = {
@@ -182,10 +185,10 @@ fun CartStepper(
                     )
                     .clipToBounds()
             )
-
-
         }
 
+        // Удалять блюдо из корзины мы можем только когда оно
+        // присутствует в корзине в количестве ровно 1 шт
         if(value == 1 ){
             Spacer(modifier = Modifier.width(16.dp))
             IconButton(
@@ -209,7 +212,6 @@ fun CartStepper(
             )
         }
     }
-
 }
 
 @Preview

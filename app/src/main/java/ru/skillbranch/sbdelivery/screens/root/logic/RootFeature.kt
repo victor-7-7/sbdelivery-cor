@@ -59,7 +59,8 @@ object RootFeature {
      * Она во вьюмодельном корутинном скоупе эмитит очередной мессидж в горячий
      * разделяемый поток мутаций. Эта функция вызывается в хэндлерах эффектов
      * под именем commit, а в композблах ContentHost и AppbarHost она вызывается
-     * под именем accept (композблы дотягиваются до нее через вьюмодель)*/
+     * под именем accept (композблы дотягиваются до нее через вьюмодель, а ее
+     * в RootScreen передает RootActivity при своей инициализации) */
     fun mutate(mutation: Msg) {
         _scope.launch {
             mutations.emit(mutation)
@@ -68,8 +69,8 @@ object RootFeature {
 
     /** Вьюмодель при своей инициализации вызывает функцию listen() и последняя собирает
      * реактивную систему. Сначала каждый мессидж потока мутаций трансформируется
-     * (через reduceDispatcher) в пару из стейта и набора эффектов, затем пара попадает
-     * в подсоединенный к потоку коллектор. В нем стейт из пары эмитится в горячий
+     * (через reduceDispatcher) в пару из рутстейта и набора эффектов, затем пара попадает
+     * в подсоединенный к потоку коллектор. В нем рутстейт из пары эмитится в горячий
      * разделяемый поток стейтов (на поток стейтов реагируют в RootScreen два композбла -
      * ContentHost и AppbarHost). Затем каждый эффект из набора передается в диспетчер
      * эффектов для дальнейшей обработки. Вторым параметром в диспетчер передается (под
@@ -120,14 +121,14 @@ object RootFeature {
     private fun reduceDispatcher(root: RootState, msg: Msg): Pair<RootState, Set<Eff>> =
         when {
             // t.c. 01:53:30 поясняется зачем нужно проверять два условия
-            msg is Msg.Dishes && root.current is ScreenState.Dishes ->
-                root.current.state.reduce(root, msg.msg)
+            msg is Msg.Dishes && root.currentScrSt is ScreenState.Dishes ->
+                root.currentScrSt.dishesState.reduce(root, msg.msg)
 
-            msg is Msg.Dish && root.current is ScreenState.Dish ->
-                root.current.state.reduce(root, msg.msg)
+            msg is Msg.Dish && root.currentScrSt is ScreenState.Dish ->
+                root.currentScrSt.dishState.reduce(root, msg.msg)
 
-            msg is Msg.Cart && root.current is ScreenState.Cart ->
-                root.current.state.reduce(root, msg.msg)
+            msg is Msg.Cart && root.currentScrSt is ScreenState.Cart ->
+                root.currentScrSt.cartState.reduce(root, msg.msg)
 
             //root mutations
             msg is Msg.UpdateCartCount -> root.copy(cartCount = msg.count) to emptySet()
@@ -145,29 +146,49 @@ data class RootState(
     val backstack: List<ScreenState> = emptyList(),
     val cartCount: Int = 0
 ) : Serializable {
-    val current: ScreenState = checkNotNull(screens[currentRoute])
+    val currentScrSt: ScreenState = checkNotNull(screens[currentRoute])
 
-    fun <T : ScreenState> changeCurrentScreen(block: T.() -> T): RootState {
-        val newScreen = (current as? T)?.block()
-        val newScreens = if (newScreen != null) screens.toMutableMap().also { mutScreens ->
-            mutScreens[currentRoute] = newScreen
+    /** Создает и возвращает новый рутстейт, в котором изменены:
+     * 1. В map-свойстве screens -> скринстейт-значение для ключа текущего экрана
+     * 2. Свойство currentScrSt рутстейта -> новое значение скринстейта,
+     * полученное из блока (block: T.() -> T).
+     * Свойства currentRoute, backstack и cartCount нового рутстейта будут с
+     * такими же значениями, как в предыдущем рутстейте */
+    fun <T : ScreenState> updateCurrentScreenState(block: T.() -> T): RootState {
+        // На текущем СКРИНстейт-свойстве РУТстейта вызываем код блока,
+        // в котором получаем экземпляр нового СКРИНстейта
+        val newScreenState = (currentScrSt as? T)?.block()
+        // Содаем новую мапу, в которой
+        val newScreens = if (newScreenState != null) screens.toMutableMap().also { mutScreens ->
+            // у пары с ключом текущего рута будет новое значение скринстейта
+            mutScreens[currentRoute] = newScreenState
         } else screens
+        // Возвращаем НОВЫЙ экземпляр РУТстейта, у которого будет изменена
+        // мапа screens (конкретнее - только пара с ключом текущего рута),
+        // а параметры currentRoute, backstack, cartCount останутся с
+        // прежними значениями. Но в конструкторе этого рутстейта
+        // движок будет инициализировать свойство currentScrSt, взяв его
+        // из мапы screens. Причем он возьмет как раз значение newScreenState,
+        // которое мы положили в мапу перед созданием нового рутстейта
         return copy(screens = newScreens)
     }
 }
 
+/** Базовый скринстейт имеет только два String-свойства - route (название экрана)
+ * и title (для заголовка аппбара). Производные скринстейты имеют у себя дополнительное
+ * свойство - стейт соответствующего типа (DishesFeature.State и т.д) */
 @LogClassMethods
 sealed class ScreenState(
     val route: String,
     val title: String
 ) : Serializable {
-    data class Dishes(val state: DishesFeature.State) :
+    data class Dishes(val dishesState: DishesFeature.State) :
         ScreenState(DishesFeature.route, "Все блюда")
 
-    data class Dish(val state: DishFeature.State) :
-        ScreenState(DishFeature.route, state.title)
+    data class Dish(val dishState: DishFeature.State) :
+        ScreenState(DishFeature.route, dishState.title)
 
-    data class Cart(val state: CartFeature.State) :
+    data class Cart(val cartState: CartFeature.State) :
         ScreenState(CartFeature.route, "Корзина")
 }
 

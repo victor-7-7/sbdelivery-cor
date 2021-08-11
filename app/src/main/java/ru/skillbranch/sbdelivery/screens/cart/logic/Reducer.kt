@@ -18,7 +18,12 @@ fun CartFeature.State.selfReduce(msg: CartFeature.Msg): Pair<CartFeature.State, 
         is CartFeature.Msg.DecrementCount -> this to setOf(CartFeature.Eff.DecrementItem(msg.dishId)).toEffs()
         is CartFeature.Msg.IncrementCount -> this to setOf(CartFeature.Eff.IncrementItem(msg.dishId)).toEffs()
         is CartFeature.Msg.HideConfirm -> TODO()
-        is CartFeature.Msg.RemoveFromCart -> TODO()
+        is CartFeature.Msg.RemoveFromCart -> this to setOf(
+            CartFeature.Eff.RemoveItem(
+                msg.id,
+                msg.title
+            )
+        ).toEffs()
         is CartFeature.Msg.SendOrder -> TODO()
         is CartFeature.Msg.ShowCart -> {
             if (msg.cart.isEmpty()) copy(uiState = CartUiState.Empty) to emptySet()
@@ -28,7 +33,7 @@ fun CartFeature.State.selfReduce(msg: CartFeature.Msg): Pair<CartFeature.State, 
             if (true) { // todo
                 this to emptySet()
             } else {
-                this to setOf(CartFeature.Eff.RemoveItem(msg.id)).toEffs()
+                this to setOf(CartFeature.Eff.RemoveItem(msg.id, msg.title)).toEffs()
             }
     }
     val msgV = "$msg".doMoreClean()
@@ -40,8 +45,10 @@ fun CartFeature.State.selfReduce(msg: CartFeature.Msg): Pair<CartFeature.State, 
 
 fun CartFeature.State.reduce(root: RootState, msg: CartFeature.Msg): Pair<RootState, Set<Eff>> {
     Log.v(LogAspect.tag, ">>>--------CartFeature.State.reduce()")
-    val (screenState, effs) = selfReduce(msg)
-    val pair = root.changeCurrentScreen<ScreenState.Cart> { copy(state = screenState) } to effs
+    val (cartState, effs) = selfReduce(msg)
+    // Блок copy(cartState = cartState) будет выполнен на экземпляре ScreenState.Cart,
+    // который имеет свойство cartState типа CartFeature.State
+    val pair = root.updateCurrentScreenState<ScreenState.Cart> { copy(cartState = cartState) } to effs
     val rootV = "$root".doMoreClean()
     val msgV = "$msg".doMoreClean()
     val pairF = "${pair.first}".doMoreClean()

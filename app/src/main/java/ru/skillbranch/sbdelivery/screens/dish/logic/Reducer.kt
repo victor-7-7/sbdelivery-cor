@@ -30,8 +30,10 @@ fun DishFeature.State.selfReduce(msg: DishFeature.Msg) : Pair<DishFeature.State,
 
 fun  DishFeature.State.reduce(root: RootState, msg: DishFeature.Msg) : Pair<RootState, Set<Eff>> {
     Log.v(LogAspect.tag, ">>>--------DishFeature.State.reduce()")
-    val (screenState, effs) = selfReduce(msg)
-    val pair = root.changeCurrentScreen<ScreenState.Dish> { copy(state = screenState) } to effs
+    val (dishState, effs) = selfReduce(msg)
+    // Блок copy(dishState = dishState) будет выполнен на экземпляре ScreenState.Dish,
+    // который имеет свойство dishState типа DishFeature.State
+    val pair = root.updateCurrentScreenState<ScreenState.Dish> { copy(dishState = dishState) } to effs
     val rootV = "$root".doMoreClean()
     val msgV = "$msg".doMoreClean()
     val pairF = "${pair.first}".doMoreClean()

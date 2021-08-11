@@ -1,5 +1,6 @@
 package ru.skillbranch.sbdelivery.screens.dishes.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
@@ -11,11 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.skillbranch.sbdelivery.R
+import ru.skillbranch.sbdelivery.aop.LogAspect
+import ru.skillbranch.sbdelivery.aop.doMoreClean
 import ru.skillbranch.sbdelivery.screens.dishes.data.DishesUiState
 import ru.skillbranch.sbdelivery.screens.dishes.logic.DishesFeature
 
 @Composable
 fun DishesScreen(state: DishesFeature.State, accept: (DishesFeature.Msg) -> Unit) {
+    Log.w(LogAspect.tag, ">>>--------DishesScreen() Params: [state = $state]".doMoreClean())
     when (state.uiState) {
         is DishesUiState.Error -> TODO()
 
@@ -50,4 +54,5 @@ fun DishesScreen(state: DishesFeature.State, accept: (DishesFeature.Msg) -> Unit
             )
         }
     }
+    Log.w(LogAspect.tag, "<<<--------DishesScreen()")
 }

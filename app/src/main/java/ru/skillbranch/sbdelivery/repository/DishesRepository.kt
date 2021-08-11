@@ -1,6 +1,7 @@
 package ru.skillbranch.sbdelivery.repository
 
 import android.util.Log
+import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.data.db.dao.CartDao
 import ru.skillbranch.sbdelivery.data.db.dao.DishesDao
 import ru.skillbranch.sbdelivery.data.db.entity.CartItemPersist
@@ -22,6 +23,7 @@ interface IDishesRepository {
     suspend fun cartCount(): Int
 }
 
+@LogClassMethods
 class DishesRepository @Inject constructor(
     private val api: RestService,
     private val dishesDao: DishesDao,

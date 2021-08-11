@@ -27,6 +27,8 @@ class CartRepository @Inject constructor(
 
     override suspend fun incrementItem(dishId: String)  = cartDao.incrementItemCount(dishId)
 
+    // В корзине нельзя сделать декремент блюда до 0. Когда count = 1,
+    // конпка "минус" исчезает, а кнопка "удалить" появляется
     override suspend fun decrementItem(dishId: String) = cartDao.decrementItemCount(dishId)
 
     override suspend fun removeItem(dishId: String) {

@@ -19,7 +19,7 @@ interface IDishesRepository {
     suspend fun findDishes(): List<DishItem>
     suspend fun findSuggestions(query: String): Map<String, Int>
     suspend fun addDishToCart(dishId: String)
-    suspend fun removeDishFromCart(dishId: String)
+    suspend fun decrementOrRemoveDishFromCart(dishId: String)
     suspend fun cartCount(): Int
 }
 
@@ -84,16 +84,20 @@ class DishesRepository @Inject constructor(
 
     override suspend fun addDishToCart(dishId: String) {
         val count = cartDao.dishCount(dishId) ?: 0
+        // Если в корзине уже есть такое блюдо, то просто увеличиваем
+        // на 1 количество штук этого блюда в корзине
         if (count > 0) cartDao.updateItemCount(dishId, count.inc())
+        // Если в корзине такого блюда еще не было, то добавляем его
         else cartDao.addItem(CartItemPersist(dishId = dishId))
     }
 
-    override suspend fun removeDishFromCart(dishId: String) {
+    override suspend fun decrementOrRemoveDishFromCart(dishId: String) {
         val count = cartDao.dishCount(dishId) ?: 0
-        // В корзине нельзя сделать декремент блюда до 0. Когда count = 1,
-        // конпка "минус" исчезает, а кнопка "удалить" появляется
-        if (count > 0) cartDao.decrementItemCount(dishId)
-        else cartDao.removeItem(dishId)
+        // Когда в корзине такого блюда - 2 шт и более, то просто
+        // делаем декремент количества штук этого блюда
+        if (count > 1) cartDao.decrementItemCount(dishId)
+        // Если такое блюдо в единственном числе, то удаляем его из корзины
+        else if (count == 1) cartDao.removeItem(dishId)
     }
 
     override suspend fun cartCount(): Int = cartDao.cartCount() ?: 0

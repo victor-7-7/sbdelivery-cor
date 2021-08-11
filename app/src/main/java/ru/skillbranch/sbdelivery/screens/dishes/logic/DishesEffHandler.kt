@@ -39,7 +39,7 @@ class DishesEffHandler @Inject constructor(
             }
 
             is DishesFeature.Eff.RemoveFromCart -> {
-                repository.removeDishFromCart(effect.id)
+                repository.decrementOrRemoveDishFromCart(effect.id)
                 val count = repository.cartCount()
                 commit(Msg.UpdateCartCount(count))
                 notifyChannel.send(Eff.Notification.Text("${effect.title} удален из корзины"))

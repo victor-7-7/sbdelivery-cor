@@ -12,6 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.skillbranch.sbdelivery.AppConfig
 import ru.skillbranch.sbdelivery.data.network.RestService
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -42,6 +43,7 @@ object NetworkModule {
     fun provideOkHttpClient(
         logging: HttpLoggingInterceptor
     ): OkHttpClient = OkHttpClient().newBuilder()
+        .readTimeout(2, TimeUnit.SECONDS) // The default value is 10 seconds
         .addInterceptor(logging) //intercept req/res for logging
         .build()
 

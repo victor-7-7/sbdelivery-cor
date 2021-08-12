@@ -1,5 +1,6 @@
 package ru.skillbranch.sbdelivery.repository
 
+import kotlinx.coroutines.delay
 import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.data.db.dao.CartDao
 import ru.skillbranch.sbdelivery.data.db.dao.DishesDao
@@ -7,7 +8,7 @@ import ru.skillbranch.sbdelivery.data.network.RestService
 import ru.skillbranch.sbdelivery.data.network.res.ReviewRes
 import ru.skillbranch.sbdelivery.data.toDishContent
 import ru.skillbranch.sbdelivery.screens.dish.data.DishContent
-import java.io.IOException
+import java.util.*
 import javax.inject.Inject
 
 interface IDishRepository {
@@ -35,11 +36,31 @@ class DishRepository @Inject constructor(
     }
 
     override suspend fun loadReviews(dishId: String): List<ReviewRes> {
-        //TODO
-        return emptyList()
+        val reviews = mutableListOf<ReviewRes>()
+        try {
+            val resp = api.loadReviews(dishId)
+            if (resp.isSuccessful) {
+                reviews.addAll(resp.body()!!)
+            } else {
+                reviews.addAll(reviewsStub())
+            }
+        } catch (e: Exception) {
+            reviews.addAll(reviewsStub())
+        }
+        return reviews
     }
 
     override suspend fun sendReview(id: String, rating: Int, review: String): ReviewRes {
         TODO("Not yet implemented")
+    }
+
+    private fun reviewsStub(): List<ReviewRes> {
+        val cal = Calendar.getInstance()
+        cal.set(2021, 8, 10)
+        return listOf(
+            ReviewRes("Глеб", cal.timeInMillis, 4, "Понравилось"),
+            ReviewRes("Алина", cal.timeInMillis - 5 * 60 * 60 * 1000, 1, "Не вкусно"),
+            ReviewRes("Иван", cal.timeInMillis + 2 * 60 * 60 * 1000, 3, "Что-то среднее")
+        )
     }
 }

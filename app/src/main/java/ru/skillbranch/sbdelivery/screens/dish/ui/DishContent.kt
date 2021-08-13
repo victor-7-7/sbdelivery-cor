@@ -90,8 +90,8 @@ fun DishContent(dish: DishContent, count: Int, accept: (DishFeature.Msg) -> Unit
 
         DishPrice(price = dish.price, oldPrice = dish.oldPrice,
             count = count,
-            onIncrement = { /*TODO*/ },
-            onDecrement = { /*TODO*/ },
+            onIncrement = { accept(DishFeature.Msg.IncrementCount) },
+            onDecrement = { accept(DishFeature.Msg.DecrementCount) },
             accept = accept,
             isLiked = dish.isLiked,
             modifier = Modifier

@@ -13,9 +13,9 @@ fun DishFeature.State.selfReduce(msg: DishFeature.Msg) : Pair<DishFeature.State,
     Log.v(LogAspect.tag, ">>>--------DishFeature.State.selfReduce()")
     val pair = when (msg) {
         is DishFeature.Msg.AddToCart -> TODO()
-        is DishFeature.Msg.DecrementCount -> TODO()
+        is DishFeature.Msg.DecrementCount -> copy(count = count - 1) to emptySet<Eff>()
         is DishFeature.Msg.HideReviewDialog -> TODO()
-        is DishFeature.Msg.IncrementCount -> TODO()
+        is DishFeature.Msg.IncrementCount -> copy(count = count + 1) to emptySet<Eff>()
         is DishFeature.Msg.SendReview -> TODO()
         is DishFeature.Msg.ShowDish -> copy(content = DishUiState.Thing(msg.dish)) to emptySet<Eff>()
         is DishFeature.Msg.ShowReviewDialog -> TODO()

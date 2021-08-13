@@ -20,7 +20,7 @@ object DishFeature {
         val isReviewDialog: Boolean = false,
         val reviews: ReviewUiState = ReviewUiState.Loading,
         val content: DishUiState = DishUiState.Loading,
-        val count: Int = 1,
+        val count: Int = 1, // Количество этого блюда для добавления в корзину
         val rating: Float = 0f
     ): Serializable
 

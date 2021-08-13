@@ -19,8 +19,11 @@ fun DishFeature.State.selfReduce(msg: DishFeature.Msg) : Pair<DishFeature.State,
         is DishFeature.Msg.SendReview -> TODO()
         is DishFeature.Msg.ShowDish -> copy(content = DishUiState.Thing(msg.dish)) to emptySet<Eff>()
         is DishFeature.Msg.ShowReviewDialog -> TODO()
-        is DishFeature.Msg.ShowReviews -> copy(reviews = ReviewUiState.Content(msg.reviews)) to emptySet()
-        is DishFeature.Msg.ToggleLike -> TODO()
+        is DishFeature.Msg.ShowReviews -> copy(reviews = ReviewUiState.Content(msg.reviews)) to emptySet<Eff>()
+        is DishFeature.Msg.ToggleLike -> {
+            copy(content = DishUiState.Thing((content as DishUiState.Thing).dishContent
+                .copy(isLiked = !content.dishContent.isLiked))) to emptySet<Eff>()
+        }
     }
     val pairV = "$pair".replace("ru.skillbranch.sbdelivery.screens.", "")
     Log.v(LogAspect.tag,  "Params(selfReduce): [msg = $msg]| Return Value: $pairV")

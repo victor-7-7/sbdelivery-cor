@@ -1,6 +1,5 @@
 package ru.skillbranch.sbdelivery.repository
 
-import kotlinx.coroutines.delay
 import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.data.db.dao.CartDao
 import ru.skillbranch.sbdelivery.data.db.dao.DishesDao
@@ -38,7 +37,7 @@ class DishRepository @Inject constructor(
     override suspend fun loadReviews(dishId: String): List<ReviewRes> {
         val reviews = mutableListOf<ReviewRes>()
         try {
-            val resp = api.loadReviews(dishId)
+            val resp = api.getReviews(dishId, 0, 10)
             if (resp.isSuccessful) {
                 reviews.addAll(resp.body()!!)
             } else {

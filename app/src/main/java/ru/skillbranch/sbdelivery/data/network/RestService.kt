@@ -18,8 +18,10 @@ interface RestService {
 
     @GET("dishes/{dishId}/reviews") // ???????????
     @Headers("If-Modified-Since: Mon, 1 Jun 2020 08:00:00 GMT")
-    suspend fun loadReviews(
-        @Path("dishId") dishId: String
+    suspend fun getReviews(
+        @Path("dishId") dishId: String,
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int
     ): Response<List<ReviewRes>>
 
     @GET("categories")

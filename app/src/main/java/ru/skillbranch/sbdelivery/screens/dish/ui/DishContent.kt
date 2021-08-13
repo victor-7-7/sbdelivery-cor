@@ -8,9 +8,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -90,6 +92,8 @@ fun DishContent(dish: DishContent, count: Int, accept: (DishFeature.Msg) -> Unit
             count = count,
             onIncrement = { /*TODO*/ },
             onDecrement = { /*TODO*/ },
+            accept = accept,
+            isLiked = dish.isLiked,
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp)
                 .constrainAs(price) {
@@ -193,6 +197,7 @@ fun Stepper(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DishPrice(
     price: Int,
@@ -201,9 +206,12 @@ fun DishPrice(
     oldPrice: Int? = null,
     fontSize: Int = 24,
     onIncrement: () -> Unit,
-    onDecrement: () -> Unit
+    onDecrement: () -> Unit,
+    accept: (DishFeature.Msg) -> Unit,
+    isLiked: Boolean = false
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier)
+    {
         if (oldPrice != null) {
             Text(
                 text = "${oldPrice * count} Р",
@@ -215,17 +223,33 @@ fun DishPrice(
             Spacer(modifier = Modifier.width(8.dp))
 
         }
+
         Text(
             text = "${price * count} Р",
             color = MaterialTheme.colors.secondary,
             style = TextStyle(fontWeight = FontWeight.Bold),
             fontSize = fontSize.sp
         )
-        Spacer(
+
+        IconButton(
+            onClick = { accept(DishFeature.Msg.ToggleLike) },
+            content = {
+                Icon(
+                    modifier = Modifier.size(36.dp).clipToBounds(),
+                    tint = MaterialTheme.colors.secondary,
+                    painter = if (isLiked) {
+                        painterResource(R.drawable.ic_favorite_black_24dp)
+                    } else {
+                        painterResource(R.drawable.ic_favorite_border_black_24dp)
+                    },
+                    contentDescription = null
+                )
+            },
             modifier = Modifier
-                .defaultMinSize(minWidth = 16.dp)
+                .size(30.dp)
                 .weight(1f)
         )
+
         Stepper(value = count, onIncrement = onIncrement, onDecrement = onDecrement)
     }
 }
@@ -242,7 +266,7 @@ fun StepperPreview() {
 @Composable
 fun PricePreview() {
     AppTheme {
-        DishPrice(60, oldPrice =100, count=5, onDecrement = {}, onIncrement = {})
+        DishPrice(60, oldPrice =100, count=5, onDecrement = {}, onIncrement = {}, accept = {})
     }
 }
 

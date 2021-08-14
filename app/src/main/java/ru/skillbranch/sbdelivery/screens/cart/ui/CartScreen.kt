@@ -32,7 +32,7 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
                         items(items = items, key = { it.id }) {
                             CartListItem(
                                 dish = it,
-                                onProductClick = { dishId: String, title: String ->
+                                onProductClick = { dishId, title ->
                                     accept(CartFeature.Msg.ClickOnDish(dishId, title))
                                 },
                                 onIncrement = { dishId ->
@@ -52,6 +52,7 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
                     },
                     modifier = Modifier.weight(1f)
                 )
+
                 Column(
                     modifier = Modifier
                         .padding(16.dp),
@@ -73,7 +74,9 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
                             color = MaterialTheme.colors.secondary
                         )
                     }
+
                     Spacer(modifier = Modifier.height(24.dp))
+
                     Button(
                         onClick = { /*TODO*/ },
                         colors = ButtonDefaults.buttonColors(
@@ -111,7 +114,7 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
             // onDismissRequest -> Executes when the user tries to dismiss the Dialog
             // by clicking outside or pressing the back button. This is not called
             // when the dismiss button is clicked
-            onDismissRequest = {  /*TODO*/  },
+            onDismissRequest = {  accept(CartFeature.Msg.HideConfirm)  },
             backgroundColor = Color.White,
             contentColor = MaterialTheme.colors.primary,
             title = { Text(text = "Вы уверены?") },
@@ -119,13 +122,16 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
             buttons = {
                 Row {
                     TextButton(
-                        onClick = { /*TODO*/  },
+                        onClick = { accept(CartFeature.Msg.HideConfirm) },
                         modifier = Modifier.weight(1f)
                     ) {
                         Text("Нет", color = MaterialTheme.colors.secondary)
                     }
                     TextButton(
-                        onClick = { /*TODO*/  },
+                        onClick = {
+                            accept(CartFeature.Msg.RemoveFromCart(
+                                state.confirmDialog.id, state.confirmDialog.title))
+                        },
                         modifier = Modifier.weight(1f)
                     ) {
                         Text("Да", color = MaterialTheme.colors.secondary)

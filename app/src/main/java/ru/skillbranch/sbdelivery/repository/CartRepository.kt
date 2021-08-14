@@ -31,9 +31,7 @@ class CartRepository @Inject constructor(
     // конпка "минус" исчезает, а кнопка "удалить" появляется
     override suspend fun decrementItem(dishId: String) = cartDao.decrementItemCount(dishId)
 
-    override suspend fun removeItem(dishId: String) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun removeItem(dishId: String) = cartDao.removeItem(dishId)
 
     override suspend fun clearCart() {
         TODO("Not yet implemented")

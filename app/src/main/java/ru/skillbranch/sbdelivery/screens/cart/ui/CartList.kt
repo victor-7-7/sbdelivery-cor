@@ -88,7 +88,9 @@ fun CartListItem(
                     .constrainAs(stepper) {
                         start.linkTo(poster.end, margin = 16.dp)
                         bottom.linkTo(poster.bottom)
-                    })
+                    }
+            )
+
             Text(
                 fontSize = 18.sp,
                 color = MaterialTheme.colors.secondary,
@@ -138,7 +140,7 @@ fun CartStepper(
             // присутствует в корзине в количестве 2 шт и больше
             if(value > 1){
                 IconButton(
-                    onClick = { onDecrement?.invoke() },
+                    onClick = { onDecrement.invoke() },
                     content = {
                         Icon(
                             modifier = Modifier.size(14.dp),
@@ -167,7 +169,7 @@ fun CartStepper(
             )
 
             IconButton(
-                onClick = { onIncrement?.invoke() },
+                onClick = { onIncrement.invoke() },
                 content = {
                     Icon(
                         modifier = Modifier.size(14.dp),

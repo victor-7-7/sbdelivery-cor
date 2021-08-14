@@ -4,6 +4,7 @@ import android.util.Log
 import ru.skillbranch.sbdelivery.aop.LogAspect
 import ru.skillbranch.sbdelivery.aop.doMoreClean
 import ru.skillbranch.sbdelivery.screens.cart.data.CartUiState
+import ru.skillbranch.sbdelivery.screens.cart.data.ConfirmDialogState
 import ru.skillbranch.sbdelivery.screens.root.logic.Eff
 import ru.skillbranch.sbdelivery.screens.root.logic.NavigateCommand
 import ru.skillbranch.sbdelivery.screens.root.logic.RootState
@@ -17,8 +18,8 @@ fun CartFeature.State.selfReduce(msg: CartFeature.Msg): Pair<CartFeature.State, 
         }
         is CartFeature.Msg.DecrementCount -> this to setOf(CartFeature.Eff.DecrementItem(msg.dishId)).toEffs()
         is CartFeature.Msg.IncrementCount -> this to setOf(CartFeature.Eff.IncrementItem(msg.dishId)).toEffs()
-        is CartFeature.Msg.HideConfirm -> TODO()
-        is CartFeature.Msg.RemoveFromCart -> this to setOf(
+        is CartFeature.Msg.HideConfirm -> copy(confirmDialog = ConfirmDialogState.Hide) to emptySet()
+        is CartFeature.Msg.RemoveFromCart -> copy(confirmDialog = ConfirmDialogState.Hide) to setOf(
             CartFeature.Eff.RemoveItem(
                 msg.id,
                 msg.title
@@ -29,12 +30,7 @@ fun CartFeature.State.selfReduce(msg: CartFeature.Msg): Pair<CartFeature.State, 
             if (msg.cart.isEmpty()) copy(uiState = CartUiState.Empty) to emptySet()
             else copy(uiState = CartUiState.Things(msg.cart)) to emptySet()
         }
-        is CartFeature.Msg.ShowConfirm ->
-            if (true) { // todo
-                this to emptySet()
-            } else {
-                this to setOf(CartFeature.Eff.RemoveItem(msg.id, msg.title)).toEffs()
-            }
+        is CartFeature.Msg.ShowConfirm -> copy(confirmDialog = ConfirmDialogState.Show(msg.id, msg.title)) to emptySet()
     }
     val msgV = "$msg".doMoreClean()
     val pairV = "$pair".replace("ru.skillbranch.sbdelivery.screens.", "")

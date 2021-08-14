@@ -1,16 +1,14 @@
 package ru.skillbranch.sbdelivery.screens.dish.logic
 
-import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.repository.DishRepository
+import ru.skillbranch.sbdelivery.screens.dishes.logic.DishesFeature
 import ru.skillbranch.sbdelivery.screens.root.logic.Eff
 import ru.skillbranch.sbdelivery.screens.root.logic.IEffHandler
 import ru.skillbranch.sbdelivery.screens.root.logic.Msg
-import java.lang.IllegalStateException
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
 @LogClassMethods
 class DishEffHandler @Inject constructor(
@@ -28,7 +26,18 @@ class DishEffHandler @Inject constructor(
 
         withContext(localJob!! + dispatcher) {
             when (effect) {
-                is DishFeature.Eff.AddToCart -> TODO()
+                is DishFeature.Eff.AddToCart -> {
+                    repository.addToCart(effect.id, effect.count)
+                    val count = repository.cartCount()
+                    // Обновляем значок в тулбаре с количеством блюд в корзине
+                    commit(Msg.UpdateCartCount(count))
+                    // Сообщаем юзеру, что товары добавлены
+                    notifyChannel.send(
+                        Eff.Notification.Text(
+                            message = "В корзину добавлено ${effect.count} товаров"
+                        )
+                    )
+                }
                 is DishFeature.Eff.LoadDish -> {
                     val dish = repository.findDish(effect.dishId)
                     commit(DishFeature.Msg.ShowDish(dish).toMsg())

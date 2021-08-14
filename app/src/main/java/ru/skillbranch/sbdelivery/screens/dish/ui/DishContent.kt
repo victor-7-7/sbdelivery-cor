@@ -103,7 +103,7 @@ fun DishContent(dish: DishContent, count: Int, accept: (DishFeature.Msg) -> Unit
                 })
 
         TextButton(
-            onClick = { /*TODO*/ },
+            onClick = { accept(DishFeature.Msg.AddToCart(dish.id, count)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,
                 contentColor = MaterialTheme.colors.onSecondary
@@ -120,7 +120,7 @@ fun DishContent(dish: DishContent, count: Int, accept: (DishFeature.Msg) -> Unit
                 }
         ) {
             Text(
-                "Добавить в корзину ${if (count > 1) "($count)" else ""}",
+                "Добавить в корзину${if (count > 1) " ($count)" else ""}",
                 style = TextStyle(fontWeight = FontWeight.Bold)
             )
         }

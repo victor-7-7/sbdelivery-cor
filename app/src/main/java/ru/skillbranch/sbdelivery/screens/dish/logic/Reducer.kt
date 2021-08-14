@@ -12,7 +12,8 @@ import ru.skillbranch.sbdelivery.screens.root.logic.ScreenState
 fun DishFeature.State.selfReduce(msg: DishFeature.Msg) : Pair<DishFeature.State, Set<Eff>> {
     Log.v(LogAspect.tag, ">>>--------DishFeature.State.selfReduce()")
     val pair = when (msg) {
-        is DishFeature.Msg.AddToCart -> TODO()
+        // Здесь msg.count - количество штук блюда, добавляемых в корзину за раз
+        is DishFeature.Msg.AddToCart -> this to setOf(DishFeature.Eff.AddToCart(msg.id, msg.count)).toEffs()
         is DishFeature.Msg.DecrementCount -> copy(count = count - 1) to emptySet<Eff>()
         is DishFeature.Msg.HideReviewDialog -> TODO()
         is DishFeature.Msg.IncrementCount -> copy(count = count + 1) to emptySet<Eff>()

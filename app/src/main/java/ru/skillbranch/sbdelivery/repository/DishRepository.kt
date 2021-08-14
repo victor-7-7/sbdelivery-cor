@@ -3,6 +3,7 @@ package ru.skillbranch.sbdelivery.repository
 import ru.skillbranch.sbdelivery.aop.LogClassMethods
 import ru.skillbranch.sbdelivery.data.db.dao.CartDao
 import ru.skillbranch.sbdelivery.data.db.dao.DishesDao
+import ru.skillbranch.sbdelivery.data.db.entity.CartItemPersist
 import ru.skillbranch.sbdelivery.data.network.RestService
 import ru.skillbranch.sbdelivery.data.network.res.ReviewRes
 import ru.skillbranch.sbdelivery.data.toDishContent
@@ -26,13 +27,20 @@ class DishRepository @Inject constructor(
 ) : IDishRepository {
     override suspend fun findDish(id: String): DishContent = dishesDao.findDish(id).toDishContent()
 
+    // Здесь count - количество штук блюда, добавляемых в корзину за раз
     override suspend fun addToCart(id: String, count: Int) {
-        TODO("Not yet implemented")
+        val dishCount = cartDao.dishCount(id) ?: 0
+        // Если в корзине уже есть такое блюдо, то просто увеличиваем
+        // на count количество штук этого блюда в корзине
+        if (dishCount > 0) cartDao.updateItemCount(id, dishCount + count)
+        else {
+            // Если в корзине такого блюда еще не было, то добавляем его
+            // с указанием количества добавки
+            cartDao.addItem(CartItemPersist(dishId = id, count = count))
+        }
     }
 
-    override suspend fun cartCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override suspend fun cartCount(): Int = cartDao.cartCount() ?: 0
 
     override suspend fun loadReviews(dishId: String): List<ReviewRes> {
         val reviews = mutableListOf<ReviewRes>()

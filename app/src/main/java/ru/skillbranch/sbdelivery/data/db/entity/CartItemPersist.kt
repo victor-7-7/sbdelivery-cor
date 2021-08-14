@@ -20,8 +20,8 @@ data class CartItemPersist(
 )
 data class CartItemDbView(
     val dishId: String,
-    val image:String,
-    val title: String,
+    val image:String, // из таблицы dishes
+    val title: String, // из таблицы dishes (поле name)
     val count:Int,
-    val price:Int
+    val price:Int // из таблицы dishes
 )

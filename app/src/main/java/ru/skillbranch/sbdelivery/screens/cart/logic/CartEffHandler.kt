@@ -44,7 +44,12 @@ class CartEffHandler @Inject constructor(
                 repository.removeItem(effect.id)
                 updateCart()
             }
-            is CartFeature.Eff.SendOrder -> TODO()
+            is CartFeature.Eff.SendOrder -> {
+                repository.clearCart()
+                updateCart()
+                notifyChannel.send(
+                    Eff.Notification.Text("Заказ оформлен"))
+            }
         }
     }
 

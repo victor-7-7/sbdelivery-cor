@@ -33,7 +33,5 @@ class CartRepository @Inject constructor(
 
     override suspend fun removeItem(dishId: String) = cartDao.removeItem(dishId)
 
-    override suspend fun clearCart() {
-        TODO("Not yet implemented")
-    }
+    override suspend fun clearCart() = cartDao.clearCart()
 }

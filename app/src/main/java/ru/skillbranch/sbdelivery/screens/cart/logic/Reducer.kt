@@ -5,10 +5,7 @@ import ru.skillbranch.sbdelivery.aop.LogAspect
 import ru.skillbranch.sbdelivery.aop.doMoreClean
 import ru.skillbranch.sbdelivery.screens.cart.data.CartUiState
 import ru.skillbranch.sbdelivery.screens.cart.data.ConfirmDialogState
-import ru.skillbranch.sbdelivery.screens.root.logic.Eff
-import ru.skillbranch.sbdelivery.screens.root.logic.NavigateCommand
-import ru.skillbranch.sbdelivery.screens.root.logic.RootState
-import ru.skillbranch.sbdelivery.screens.root.logic.ScreenState
+import ru.skillbranch.sbdelivery.screens.root.logic.*
 
 fun CartFeature.State.selfReduce(msg: CartFeature.Msg): Pair<CartFeature.State, Set<Eff>> {
     Log.v(LogAspect.tag, ">>>--------CartFeature.State.selfReduce()")
@@ -25,7 +22,7 @@ fun CartFeature.State.selfReduce(msg: CartFeature.Msg): Pair<CartFeature.State, 
                 msg.title
             )
         ).toEffs()
-        is CartFeature.Msg.SendOrder -> TODO()
+        is CartFeature.Msg.SendOrder -> this to setOf(CartFeature.Eff.SendOrder(msg.order)).toEffs()
         is CartFeature.Msg.ShowCart -> {
             if (msg.cart.isEmpty()) copy(uiState = CartUiState.Empty) to emptySet()
             else copy(uiState = CartUiState.Things(msg.cart)) to emptySet()

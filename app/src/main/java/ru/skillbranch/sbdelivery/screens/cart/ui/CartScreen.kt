@@ -78,7 +78,13 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            val order = mutableMapOf<String, Int>()
+                            state.uiState.dishes.forEach { dish ->
+                                order[dish.id] = dish.count
+                            }
+                            accept(CartFeature.Msg.SendOrder(order))
+                        },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.secondary,
                             contentColor = MaterialTheme.colors.onSecondary

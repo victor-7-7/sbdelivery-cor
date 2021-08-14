@@ -30,6 +30,7 @@ object CartFeature {
 
     sealed class Msg {
         object HideConfirm : Msg()
+        // order - мапа из пар (id блюда <--> количество штук этого блюда в корзине)
         data class SendOrder(val order: Map<String, Int>) : Msg()
         data class ShowConfirm(val id:String, val title: String) : Msg()
         data class IncrementCount(val dishId:String) : Msg()

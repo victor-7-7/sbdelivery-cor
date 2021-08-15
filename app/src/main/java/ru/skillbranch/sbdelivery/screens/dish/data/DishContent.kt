@@ -8,6 +8,5 @@ data class DishContent(
     val title: String,
     val description: String,
     val price: Int,
-    val oldPrice: Int?,
-    val isLiked: Boolean = false
+    val oldPrice: Int?
 ): Serializable

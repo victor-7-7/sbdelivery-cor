@@ -36,7 +36,8 @@ fun DishScreen(state: DishFeature.State, accept: (DishFeature.Msg) -> Unit) {
     when (state.content) {
         is DishUiState.Thing -> {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                DishContent(dish = state.content.dishContent, count = state.count, accept = accept)
+                DishContent(dish = state.content.dishContent, count = state.count,
+                    isLiked = state.isLiked, accept = accept)
                 DishReviews(reviews = state.reviews, rating = state.rating, accept = accept)
             }
 

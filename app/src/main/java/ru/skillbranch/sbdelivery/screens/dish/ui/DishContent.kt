@@ -30,7 +30,7 @@ import ru.skillbranch.sbdelivery.screens.dish.data.DishContent
 import ru.skillbranch.sbdelivery.screens.root.ui.AppTheme
 
 @Composable
-fun DishContent(dish: DishContent, count: Int, accept: (DishFeature.Msg) -> Unit) {
+fun DishContent(dish: DishContent, count: Int, isLiked: Boolean, accept: (DishFeature.Msg) -> Unit) {
     ConstraintLayout {
 
         val (title, poster, description, price, addBtn) = createRefs()
@@ -93,7 +93,7 @@ fun DishContent(dish: DishContent, count: Int, accept: (DishFeature.Msg) -> Unit
             onIncrement = { accept(DishFeature.Msg.IncrementCount) },
             onDecrement = { accept(DishFeature.Msg.DecrementCount) },
             accept = accept,
-            isLiked = dish.isLiked,
+            isLiked = isLiked,
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp)
                 .constrainAs(price) {
@@ -283,7 +283,8 @@ fun ContentPreview() {
                 100,
                 200
             ),
-            count = 5
+            count = 5,
+            isLiked = false
         ) {}
     }
 }

@@ -3,6 +3,7 @@ package ru.skillbranch.sbdelivery.screens.dish.logic
 import android.util.Log
 import ru.skillbranch.sbdelivery.aop.LogAspect
 import ru.skillbranch.sbdelivery.aop.doMoreClean
+import ru.skillbranch.sbdelivery.data.network.res.ReviewRes
 import ru.skillbranch.sbdelivery.screens.dish.data.DishUiState
 import ru.skillbranch.sbdelivery.screens.dish.data.ReviewUiState
 import ru.skillbranch.sbdelivery.screens.root.logic.Eff
@@ -15,12 +16,20 @@ fun DishFeature.State.selfReduce(msg: DishFeature.Msg) : Pair<DishFeature.State,
         // Здесь msg.count - количество штук блюда, добавляемых в корзину за раз
         is DishFeature.Msg.AddToCart -> this to setOf(DishFeature.Eff.AddToCart(msg.id, msg.count)).toEffs()
         is DishFeature.Msg.DecrementCount -> copy(count = count - 1) to emptySet<Eff>()
-        is DishFeature.Msg.HideReviewDialog -> TODO()
+        is DishFeature.Msg.HideReviewDialog -> copy(isReviewDialog = false) to emptySet<Eff>()
         is DishFeature.Msg.IncrementCount -> copy(count = count + 1) to emptySet<Eff>()
-        is DishFeature.Msg.SendReview -> TODO()
+        is DishFeature.Msg.SendReview -> {
+            val reviewList = if (reviews is ReviewUiState.Empty) emptyList()
+                else (reviews as ReviewUiState.Content).list
+            copy(isReviewDialog = false, reviews = ReviewUiState.ContentWhileLoading(reviewList)) to
+                    setOf(DishFeature.Eff.SendReview(msg.dishId, msg.rating, msg.review)).toEffs()
+        }
         is DishFeature.Msg.ShowDish -> copy(content = DishUiState.Thing(msg.dish)) to emptySet<Eff>()
-        is DishFeature.Msg.ShowReviewDialog -> TODO()
+        is DishFeature.Msg.ShowReviewDialog -> copy(isReviewDialog = true) to emptySet<Eff>()
         is DishFeature.Msg.ShowReviews -> copy(reviews = ReviewUiState.Content(msg.reviews)) to emptySet<Eff>()
+        is DishFeature.Msg.ReviewsEmpty -> copy(reviews = ReviewUiState.Empty) to emptySet<Eff>()
+        // По хорошему тут еще надо добавить эффект ToggleLike, а в хендлере эффектов
+        // записать в БД девайса, что данное блюдо лайкнуто владельцем девайса
         is DishFeature.Msg.ToggleLike -> copy(isLiked = !isLiked) to emptySet<Eff>()
     }
     val pairV = "$pair".replace("ru.skillbranch.sbdelivery.screens.", "")

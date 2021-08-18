@@ -36,7 +36,7 @@ object CartFeature {
         data class IncrementCount(val dishId:String) : Msg()
         data class DecrementCount(val dishId:String) : Msg()
         data class ShowCart(val cart: List<CartItem>) : Msg()
-        data class RemoveFromCart(val id: String, val title:String) :Msg()
+        data class RemoveFromCart(val id: String) :Msg()
         data class ClickOnDish(val dishId: String, val title: String) :Msg()
     }
 }

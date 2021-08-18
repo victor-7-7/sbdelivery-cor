@@ -49,7 +49,6 @@ fun DishScreen(state: DishFeature.State, accept: (DishFeature.Msg) -> Unit) {
         ) {
             CircularProgressIndicator(color = MaterialTheme.colors.secondary)
         }
-
     }
 
     if (state.isReviewDialog) ReviewDialog(state.id, accept)
@@ -80,6 +79,7 @@ fun ReviewDialog(dishId: String, accept: (DishFeature.Msg) -> Unit) {
                         style = TextStyle(fontWeight = FontWeight.Bold),
                         modifier = Modifier.weight(1f)
                     )
+
                     IconButton(
                         onClick = { accept(DishFeature.Msg.HideReviewDialog) },
                         modifier = Modifier.size(18.dp)
@@ -91,11 +91,13 @@ fun ReviewDialog(dishId: String, accept: (DishFeature.Msg) -> Unit) {
                         )
                     }
                 }
+
                 RatingBar(
                     value = rating,
                     onChoose = { rating = it },
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 OutlinedTextField(
                     value = review,
                     onValueChange = { review = it },
@@ -112,7 +114,9 @@ fun ReviewDialog(dishId: String, accept: (DishFeature.Msg) -> Unit) {
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(16.dp))
+
                 TextButton(
                     onClick = { accept(DishFeature.Msg.SendReview(dishId, rating, review)) },
                     colors = ButtonDefaults.buttonColors(
@@ -156,6 +160,6 @@ fun RatingBar(value: Int = 0, maxValue: Int = 5, onChoose: (Int) -> Unit, modifi
 @Preview
 fun RatingPreview() {
     AppTheme {
-        RatingBar(value = 1, onChoose = {}, modifier = Modifier.fillMaxWidth())
+        RatingBar(value = 2, onChoose = {}, modifier = Modifier.fillMaxWidth())
     }
 }

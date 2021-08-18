@@ -68,7 +68,7 @@ class DishesRepository @Inject constructor(
                     var j = idx + query.trim().length
                     while (j < dish.name.length) {
                         // Ищем индекс символа, оканчивающего слово
-                        if (dish.name[j] == ' ') break
+                        if (dish.name[j] == ' ' || dish.name[j] == ',') break
                         j++
                     }
                     // Returns the substring of this string starting at the

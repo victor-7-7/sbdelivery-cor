@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -25,13 +27,14 @@ import java.util.*
 fun DishReviews(reviews: ReviewUiState, rating: Float, accept: (DishFeature.Msg) -> Unit) {
     when (reviews) {
         is ReviewUiState.Loading -> Box(
-            contentAlignment = Alignment.Center,
+            contentAlignment = Center,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
             CircularProgressIndicator(color = MaterialTheme.colors.secondary)
         }
+
         is ReviewUiState.Content -> Reviews(
             reviews = reviews.list,
             rating = rating,
@@ -39,11 +42,53 @@ fun DishReviews(reviews: ReviewUiState, rating: Float, accept: (DishFeature.Msg)
             modifier = Modifier
                 .fillMaxWidth()
         )
-        ReviewUiState.Empty -> Box(
+
+        is ReviewUiState.ContentWhileLoading -> Box(contentAlignment = Center) {
+            Reviews(
+                reviews = reviews.list,
+                rating = rating,
+                onAddReview = { accept(DishFeature.Msg.ShowReviewDialog) },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Center),
+                    color = MaterialTheme.colors.secondary
+                )
+            }
+        }
+
+        /*ReviewUiState.Empty -> Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.height(112.dp)
         ) {
-            Text(text = "Отзывов о этом товаре пока нет.\n Но вы можете быть первым")
+            Text(text = "Отзывов о этом товаре пока нет.\nНо вы можете быть первым")
+        }*/
+
+        ReviewUiState.Empty -> Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        )  {
+            Text(
+                text = "Отзывов об этом товаре пока нет.\nНо вы можете быть первым",
+                modifier = Modifier.padding(bottom = 16.dp).align(CenterHorizontally)
+            )
+            TextButton(
+                modifier = Modifier.align(CenterHorizontally),
+                onClick = { accept(DishFeature.Msg.ShowReviewDialog) },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(android.graphics.Color.parseColor("#33313B")),
+                    contentColor = Color.White
+                ),
+            ) {
+                Text("Добавить отзыв")
+            }
         }
     }
 }
@@ -85,12 +130,14 @@ fun Reviews(
                     style = TextStyle(fontWeight = FontWeight.Bold)
                 )
             }
+
             Spacer(modifier = Modifier.weight(1f))
+
             TextButton(
                 onClick = { onAddReview() },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = lightBgColor,
-                    contentColor = androidx.compose.ui.graphics.Color.White
+                    contentColor = Color.White
                 ),
             ) {
                 Text("Добавить отзыв")
@@ -115,7 +162,8 @@ fun ReviewItem(review: ReviewRes, modifier: Modifier = Modifier) {
     ) {
         Column(modifier = modifier.padding(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val date = SimpleDateFormat("dd.MM.yy").run { format(Date(review.date)) }
+                val date = SimpleDateFormat("dd.MM.yy HH:mm", Locale.getDefault())
+                    .run { format(Date(review.date)) }
                 Text(
                     text = "${review.name}, $date",
                     modifier = Modifier.weight(1f),

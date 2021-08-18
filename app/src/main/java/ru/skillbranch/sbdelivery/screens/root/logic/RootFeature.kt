@@ -91,7 +91,8 @@ object RootFeature {
                 // двух эффектов - SyncDishes и SyncCounter. Эта начальная пара будет
                 // проэмичена в коллектор. Затем в коллектор будут эмитится пары, являющиеся
                 // результатом свертки (в функции reduceDispatcher) текущей (проэмиченой
-                // до того) пары и очередного мессиджа
+                // до того) пары (стейт/эффект) и очередного мессиджа с возвратом из свертки
+                // новой пары - стейт/эффект
                 .scan((initState ?: initialState()) to initialEffects()) { (s, _), m ->
                     // При запуске приложения s = RootState(..., currentRoute=dishes,
                     // backstack=[], cartCount=0), а m = Dishes(msg=ShowDishes(dishes=

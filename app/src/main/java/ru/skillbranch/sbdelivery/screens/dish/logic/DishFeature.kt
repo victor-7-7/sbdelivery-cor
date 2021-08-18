@@ -41,6 +41,7 @@ object DishFeature {
         object DecrementCount : Msg()
         object ShowReviewDialog : Msg()
         object HideReviewDialog : Msg()
+        object ReviewsEmpty : Msg()
         data class SendReview(val dishId:String, val rating: Int, val review:String) : Msg()
         data class ShowDish(val dish: DishContent) : Msg()
         data class AddToCart(val id: String, val count: Int) : Msg()

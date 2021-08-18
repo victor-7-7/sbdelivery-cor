@@ -43,6 +43,7 @@ class CartEffHandler @Inject constructor(
                 // Юзер уже подтвердил удаление товара из корзины
                 repository.removeItem(effect.id)
                 updateCart()
+                notifyChannel.send(Eff.Notification.Text("${effect.title} удален из корзины"))
             }
             is CartFeature.Eff.SendOrder -> {
                 repository.clearCart()

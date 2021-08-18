@@ -38,19 +38,54 @@ class DishEffHandler @Inject constructor(
                         )
                     )
                 }
+
                 is DishFeature.Eff.LoadDish -> {
                     val dish = repository.findDish(effect.dishId)
                     commit(DishFeature.Msg.ShowDish(dish).toMsg())
                 }
+
                 is DishFeature.Eff.LoadReviews -> {
                     try {
                         val reviews = repository.loadReviews(effect.dishId)
-                        commit(DishFeature.Msg.ShowReviews(reviews).toMsg())
+                        if (reviews.isEmpty()) {
+                            commit(DishFeature.Msg.ReviewsEmpty.toMsg())
+                        }
+                        else {
+                            commit(DishFeature.Msg.ShowReviews(reviews).toMsg())
+                        }
                     } catch (t: Throwable) {
                         notifyChannel.send(Eff.Notification.Error(t.message ?: "something error"))
                     }
                 }
-                is DishFeature.Eff.SendReview -> TODO()
+
+                is DishFeature.Eff.SendReview -> {
+                    try {
+                        val reviewRes = repository.sendReview(effect.id, effect.rating, effect.review)
+                        val reviews = repository.loadReviews(effect.id)
+                        // Если реального ответа сервера не было (это песочница)
+                        if (reviewRes.name == "stubName") {
+                            val stubReviews = reviews.toMutableList()
+                            stubReviews.add(reviewRes)
+                            commit(DishFeature.Msg.ShowReviews(stubReviews).toMsg())
+
+                        } else commit(DishFeature.Msg.ShowReviews(reviews).toMsg())
+                        //------ Вариант с единственным обращением к серверу ---------
+                        // Дополнить класс-эффект четвертым свойством currReviews. В редьюсере
+                        // задать ему значение - взять из стейт-свойства reviews (текущий список
+                        // сидит в виде свойства list в классе ReviewUiState.Content). Теперь
+                        // здесь добавить к текущему списку отзывов полученный с сервера отзыв
+                        // reviewRes и обновленный список закоммитить мессиджем ShowReviews
+                        //------------------------------------------------------------
+                        notifyChannel.send(
+                            Eff.Notification.Text(
+                                message = "Отзыв успешно отправлен"
+                            )
+                        )
+                    } catch (t: Throwable) {
+                        notifyChannel.send(Eff.Notification.Error(t.message ?: "something error"))
+                    }
+                }
+
                 is DishFeature.Eff.Terminate -> {
                     localJob?.cancel("Terminate coroutine scope")
                     // t.c. 01:59:40 если джоб отменен, то к нему уже
@@ -60,7 +95,6 @@ class DishEffHandler @Inject constructor(
                 }
             }
         }
-
     }
 
     private fun DishFeature.Msg.toMsg(): Msg = Msg.Dish(this)

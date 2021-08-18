@@ -5,6 +5,7 @@ import ru.skillbranch.sbdelivery.data.db.dao.CartDao
 import ru.skillbranch.sbdelivery.data.db.dao.DishesDao
 import ru.skillbranch.sbdelivery.data.db.entity.CartItemPersist
 import ru.skillbranch.sbdelivery.data.network.RestService
+import ru.skillbranch.sbdelivery.data.network.req.ReviewReq
 import ru.skillbranch.sbdelivery.data.network.res.ReviewRes
 import ru.skillbranch.sbdelivery.data.toDishContent
 import ru.skillbranch.sbdelivery.screens.dish.data.DishContent
@@ -58,7 +59,11 @@ class DishRepository @Inject constructor(
     }
 
     override suspend fun sendReview(id: String, rating: Int, review: String): ReviewRes {
-        TODO("Not yet implemented")
+        return try {
+            api.sendReview(id, ReviewReq(rating, review))
+        } catch (e: Exception) {
+            ReviewRes("stubName", Date().time, rating, review)
+        }
     }
 
     private fun reviewsStub(): List<ReviewRes> {
@@ -69,5 +74,6 @@ class DishRepository @Inject constructor(
             ReviewRes("Алина", cal.timeInMillis - 5 * 60 * 60 * 1000, 1, "Не вкусно"),
             ReviewRes("Иван", cal.timeInMillis + 2 * 60 * 60 * 1000, 3, "Что-то среднее")
         )
+//        return listOf()
     }
 }

@@ -19,7 +19,7 @@ fun CartFeature.State.selfReduce(msg: CartFeature.Msg): Pair<CartFeature.State, 
         is CartFeature.Msg.RemoveFromCart -> copy(confirmDialog = ConfirmDialogState.Hide) to setOf(
             CartFeature.Eff.RemoveItem(
                 msg.id,
-                msg.title
+                (confirmDialog as ConfirmDialogState.Show).title
             )
         ).toEffs()
         is CartFeature.Msg.SendOrder -> this to setOf(CartFeature.Eff.SendOrder(msg.order)).toEffs()

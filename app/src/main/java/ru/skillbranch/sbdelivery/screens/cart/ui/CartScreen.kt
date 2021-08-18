@@ -135,8 +135,7 @@ fun CartScreen(state: CartFeature.State, accept: (CartFeature.Msg) -> Unit) {
                     }
                     TextButton(
                         onClick = {
-                            accept(CartFeature.Msg.RemoveFromCart(
-                                state.confirmDialog.id, state.confirmDialog.title))
+                            accept(CartFeature.Msg.RemoveFromCart(state.confirmDialog.id))
                         },
                         modifier = Modifier.weight(1f)
                     ) {

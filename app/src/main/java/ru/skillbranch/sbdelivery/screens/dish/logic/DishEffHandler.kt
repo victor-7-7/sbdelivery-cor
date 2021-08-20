@@ -31,7 +31,7 @@ class DishEffHandler @Inject constructor(
                     val count = repository.cartCount()
                     // Обновляем значок в тулбаре с количеством блюд в корзине
                     commit(Msg.UpdateCartCount(count))
-                    // Сообщаем юзеру, что товары добавлены
+                    // Сообщаем юзеру, что блюдо в количестве count добавлено в корзину
                     notifyChannel.send(
                         Eff.Notification.Text(
                             message = "В корзину добавлено ${effect.count} товаров"
@@ -61,21 +61,9 @@ class DishEffHandler @Inject constructor(
                 is DishFeature.Eff.SendReview -> {
                     try {
                         val reviewRes = repository.sendReview(effect.id, effect.rating, effect.review)
-                        val reviews = repository.loadReviews(effect.id)
-                        // Если реального ответа сервера не было (это песочница)
-                        if (reviewRes.name == "stubName") {
-                            val stubReviews = reviews.toMutableList()
-                            stubReviews.add(reviewRes)
-                            commit(DishFeature.Msg.ShowReviews(stubReviews).toMsg())
-
-                        } else commit(DishFeature.Msg.ShowReviews(reviews).toMsg())
-                        //------ Вариант с единственным обращением к серверу ---------
-                        // Дополнить класс-эффект четвертым свойством currReviews. В редьюсере
-                        // задать ему значение - взять из стейт-свойства reviews (текущий список
-                        // сидит в виде свойства list в классе ReviewUiState.Content). Теперь
-                        // здесь добавить к текущему списку отзывов полученный с сервера отзыв
-                        // reviewRes и обновленный список закоммитить мессиджем ShowReviews
-                        //------------------------------------------------------------
+                        val reviews = effect.currReviews.toMutableList()
+                        reviews.add(reviewRes)
+                        commit(DishFeature.Msg.ShowReviews(reviews).toMsg())
                         notifyChannel.send(
                             Eff.Notification.Text(
                                 message = "Отзыв успешно отправлен"

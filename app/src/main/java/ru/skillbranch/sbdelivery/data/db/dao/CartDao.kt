@@ -33,6 +33,7 @@ interface CartDao {
     @Query("SELECT count FROM cart_items WHERE dishId = :dishId")
     suspend fun dishCount(dishId: String): Int?
 
+    /** Общее количество всех блюд в корзине */
     @Query("SELECT SUM(count) FROM cart_items")
     suspend fun cartCount(): Int?
 

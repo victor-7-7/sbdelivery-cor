@@ -29,7 +29,8 @@ object DishFeature {
         data class LoadDish(val dishId: String) : Eff()
         data class LoadReviews(val dishId: String) : Eff()
         data class AddToCart(val id: String, val count: Int) : Eff()
-        data class SendReview(val id: String, val rating: Int, val review: String) : Eff()
+        data class SendReview(val id: String, val rating: Int, val review: String,
+                              val currReviews: List<ReviewRes> = mutableListOf()) : Eff()
         // t.c. 01:54:20 надо прервать запущенные корутины, потому что
         // их результат уже не понадобится (юзер ушел с этого экрана)
         object Terminate: Eff()

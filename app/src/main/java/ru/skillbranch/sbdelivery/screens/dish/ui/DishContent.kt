@@ -202,7 +202,7 @@ fun Stepper(
 fun DishPrice(
     price: Int,
     modifier: Modifier = Modifier,
-    count: Int = 1,
+    count: Int = 1, // Количество штук блюда, добавляемых в корзину за раз
     oldPrice: Int? = null,
     fontSize: Int = 24,
     onIncrement: () -> Unit,

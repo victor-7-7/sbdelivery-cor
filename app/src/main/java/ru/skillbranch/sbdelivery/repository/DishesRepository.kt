@@ -55,28 +55,77 @@ class DishesRepository @Inject constructor(
         dishesDao.findAllDishes().map { it.toDishItem() }
 
     override suspend fun findSuggestions(query: String): Map<String, Int> {
-        // Надо вернуть мапу из пар (ключ/значение), где ключ - название
-        // блюда (или часть названия), содержащее в себе query-подстроку,
-        // значение - количество блюд с идентичным фрагментом названия в магазине
+        // Надо вернуть мапу из пар (ключ/значение). Ключ - название блюда
+        // (или часть этого названия), содержащее в себе query-подстроку.
+        // Значение - количество вхождений этой query-подстроки в названиях блюд.
         val suggs = mutableMapOf<String, Int>()
-        if (query.isBlank()) return suggs
+        if (query.isBlank()) return suggs // Пустые запросы отбрасываем
+
         else dishesDao.findDishesFrom(query)
             .map { dish ->
-                    // Индекс первого вхождения запроса в имя блюда
-                    val idx = dish.name.indexOf(query.trim(), ignoreCase = true)
-                    // Сдвигаем индекс на следующий после запроса символ
-                    var j = idx + query.trim().length
-                    while (j < dish.name.length) {
-                        // Ищем индекс символа, оканчивающего слово
-                        if (dish.name[j] == ' ' || dish.name[j] == ',') break
-                        j++
+                // Индекс символа в dish.name, с которого начинаем искать
+                var j = 0
+                // Границы слова. end - это индекс следующего после слова символа, либо,
+                // если слово оканчивает dish.name строку, end = dish.name.length
+                var start: Int; var end : Int
+                var shortName: String; var badLast = false
+                // Ищем все вхождения query-подстроки в имени блюда dish
+                while (j < dish.name.length) {
+                    // Индекс первого вхождения query-подстроки в имя блюда, начиная с индекса j
+                    j = dish.name.indexOf(query.trim(), j, ignoreCase = true)
+                    // Если ничего не найдено, выходим из этой итерации
+                    if (j == -1) break
+
+                    start = j
+                    // Ищем индекс символа, начинающего слово, содержащее query-подстроку
+                    while (start > 0) {
+                        // Смотрим на предыдущий символ. Если он не годится для слова, то выходим
+                        if (dish.name[start - 1] == ' ' || dish.name[start - 1] == ','
+                            || dish.name[start - 1] == '"' || dish.name[start - 1] == '.'
+                            || dish.name[start - 1] == ';') break
+                        // Берем символ в собираемое слово
+                        start--
                     }
-                    // Returns the substring of this string starting at the
-                    // startIndex and ending right before the endIndex
-                    val shortName = dish.name.substring(0, j)
-                    // Мерджим блюда с одинакомым shortName в одну запись
-                    // и учитываем их количество
-                    suggs.merge(shortName, 1) { i: Int, _: Int -> i + 1 }
+
+                    // Сдвигаем end на следующий после query-подстроки символ
+                    end = j + query.trim().length
+                    // Ищем индекс символа, следующего сразу ЗА словом, содержащим query-подстроку
+                    while (end < dish.name.length) {
+                        // Проверяем, пригоден ли end-символ для слова
+                        if (dish.name[end] == ' ' || dish.name[end] == ',' || dish.name[end] == '"'
+                            || dish.name[end] == '.' || dish.name[end] == ';')
+                        {
+                            // Если непригодный для слова символ оканчивает строку dish.name,
+                            // то чтобы не зациклится делаем инкремент перед брейком
+                            if (end == dish.name.length - 1) {
+                                end++
+                                badLast = true
+                            }
+                            break
+                        }
+                        // Берем символ в собираемое слово
+                        end++
+                    }
+                    j = end
+
+                    shortName = if (end == dish.name.length) {
+                        if (badLast) dish.name.substring(start, end - 1)
+                        else
+                        // Returns a substring of this string that starts at the
+                        // specified startIndex and continues to the end of the string
+                            dish.name.substring(start)
+                    } else {
+                        // Returns the substring of this string starting at the
+                        // startIndex and ending right before the endIndex
+                        dish.name.substring(start, end)
+                    }
+                    // Мерджим с имеющейся в suggs парой с ключом shortName,
+                    // добавив к значению единичку. Либо, если такой пары в
+                    // suggs не было, то добавляем такую пару в мапу suggs
+                    suggs.merge(shortName.lowercase(), 1) { i: Int, _: Int -> i + 1 }
+                    // Если shortName лежит на правом краю имени блюда, то
+                    // j == dish.name.length. Иначе - можно еще поискать вхождения
+                }
             }
         Log.e("TAG", "findSuggestions: suggestions => $suggs")
         return suggs
@@ -97,7 +146,9 @@ class DishesRepository @Inject constructor(
         // делаем декремент количества штук этого блюда
         if (count > 1) cartDao.decrementItemCount(dishId)
         // Если такое блюдо в единственном числе, то удаляем его из корзины
-        else if (count == 1) cartDao.removeItem(dishId)
+        else cartDao.removeItem(dishId)
+        // Здесь count не может быть 0, так как дать команду на удаление
+        // юзер может только для уже добавленного в корзину блюда
     }
 
     override suspend fun cartCount(): Int = cartDao.cartCount() ?: 0

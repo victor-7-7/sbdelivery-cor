@@ -171,7 +171,6 @@ fun SearchToolbar(
                                         .padding(horizontal = 4.dp)
                                 )
                             }
-
                         }
                     }
                 }

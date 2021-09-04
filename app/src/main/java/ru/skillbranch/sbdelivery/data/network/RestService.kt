@@ -17,7 +17,8 @@ interface RestService {
         @Query("limit") limit: Int
     ): Response<List<DishRes>>
 
-    @GET("dishes/{dishId}/reviews") // ???????????
+    // https://sbdelivery.docs.apiary.io/#reference/6/0/get-reviews
+    @GET("reviews/{dishId}")
     @Headers("If-Modified-Since: Mon, 1 Jun 2020 08:00:00 GMT")
     suspend fun getReviews(
         @Path("dishId") dishId: String,
@@ -25,7 +26,8 @@ interface RestService {
         @Query("limit") limit: Int
     ): Response<List<ReviewRes>>
 
-    @POST("dishes/{dishId}/reviews")  // ???????????
+    // https://sbdelivery.docs.apiary.io/#reference/6/1/add-review
+    @POST("reviews/{dishId}")
     suspend fun sendReview(
         @Path("dishId") dishId: String,
         @Body review: ReviewReq

@@ -43,7 +43,7 @@ object NetworkModule {
     fun provideOkHttpClient(
         logging: HttpLoggingInterceptor
     ): OkHttpClient = OkHttpClient().newBuilder()
-        .readTimeout(2, TimeUnit.SECONDS) // The default value is 10 seconds
+        .readTimeout(8, TimeUnit.SECONDS) // The default value is 10 seconds
         .addInterceptor(logging) //intercept req/res for logging
         .build()
 

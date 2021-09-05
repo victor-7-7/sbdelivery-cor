@@ -9,19 +9,19 @@ ext{
     room_version = "2.3.0"
     retofit_version ="2.9.0"
     okhttp_version ="5.0.0-alpha.2"
-    moshi_version ="1.11.0"
+    moshi_version ="1.12.0"
     navigation_version = "2.3.3"
     hilt_vm_version="1.0.0-alpha03"
-    hilt_version="2.37"
+    hilt_version="2.38.1"
     hilt_compiler_version="1.0.0-beta01"
     // https://github.com/google/accompanist
     // https://github.com/google/accompanist/releases
     coil_accompanist_compose_version ="0.6.2"
-    coil_compose_version ="1.3.0"
+    coil_compose_version ="1.3.1"
     // https://stackoverflow.com/questions/67667099/java-lang-nosuchmethoderror-startrestartgroup-after-upgrading-jetpack-compose-to
     // Every library needs to be recompiled against xxxx to work
     // In your case you have to update the accompanist libraries with the yyyy
-    compose_version="1.1.0-alpha01"
+    compose_version="1.1.0-alpha03"
     compose_activity_version="1.3.1"
     compose_constarint_version="1.0.0-beta02"
 }
